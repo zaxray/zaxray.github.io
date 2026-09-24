@@ -1,0 +1,3371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#efe7d4">
+<title>月亮，很美吧？</title>
+
+<style>
+/* ============================================================
+   0. 全局变量
+   ============================================================ */
+:root {
+  --paper:      #efe7d4;
+  --ink:        #2a2622;
+  --ink-soft:   #6b6152;
+  --ink-faint:  #a89b84;
+  --indigo:     #1c3350;
+  --indigo-2:   #27466e;
+  --moon:       #f4e3a1;
+  --line:       #c9bda2;
+  --card:       #fffdf8;
+  --new:        #29498f;
+
+  --font-title: "Noto Serif SC", "Source Han Serif SC", "Songti SC",
+                "SimSun", "Hiragino Mincho ProN", "Yu Mincho", serif;
+
+  --pattern-paper: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='0.25'/%3E%3C/svg%3E");
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+html {
+  background-color: var(--paper);
+  background-image:
+    var(--pattern-paper),
+    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.75), transparent 52%),
+    radial-gradient(circle at 82% 88%, rgba(196, 172, 126, 0.30), transparent 58%);
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-size: 260px 260px, cover, cover;
+  overscroll-behavior-y: none;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC",
+               "SimSun", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 16px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+  background-color: transparent;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--paper);
+  background-image:
+    var(--pattern-paper),
+    radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.75), transparent 52%),
+    radial-gradient(circle at 82% 88%, rgba(196, 172, 126, 0.30), transparent 58%);
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-size: 260px 260px, cover, cover;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%,
+              transparent 48%,
+              rgba(88, 68, 38, 0.14) 100%);
+}
+
+/* ============================================================
+   1. 页头
+   ============================================================ */
+.site-header {
+  position: relative;
+  overflow: hidden;
+  padding: 2cm 40px;
+  color: var(--moon);
+  background: linear-gradient(140deg, #14243a 0%, var(--indigo) 42%, var(--indigo-2) 100%);
+  border-bottom: 3px solid rgba(244, 227, 161, 0.55);
+  box-shadow: 0 8px 26px rgba(20, 36, 58, 0.28);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.moon-sky {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.moon-inner {
+  width: 39%;
+  min-width: 260px;
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  opacity: 0.72;
+  filter: blur(0.8px);
+  transform-origin: center center;
+}
+
+.moon-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+@keyframes moonGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(244, 227, 161, 0.42))
+            drop-shadow(0 0 5px rgba(244, 227, 161, 0.16));
+  }
+  50% {
+    filter: drop-shadow(0 0 5px rgba(244, 227, 161, 0.85))
+            drop-shadow(0 0 13px rgba(244, 227, 161, 0.38));
+  }
+}
+
+.moon-icon {
+  display: block;
+  animation: moonGlow 6.5s ease-in-out infinite;
+  flex: 0 0 auto;
+}
+
+.water-ripple {
+  width: 100%;
+  aspect-ratio: 15 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4px 0 6px;
+}
+
+@keyframes rippleGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px rgba(244, 227, 161, 0.35));
+    opacity: 0.72;
+  }
+  50% {
+    filter: drop-shadow(0 0 5px rgba(244, 227, 161, 0.78));
+    opacity: 1;
+  }
+}
+
+.water-ripple svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: rippleGlow 6.5s ease-in-out infinite;
+}
+
+.water-ripple ellipse {
+  fill: none;
+  stroke: rgba(244, 227, 161, 0.42);
+  stroke-width: 0.6;
+}
+
+.site-title-block {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 100%;
+  padding: 0 20px;
+  text-align: center;
+  pointer-events: none;
+}
+
+@keyframes titleBreath {
+  0%, 100% {
+    text-shadow: 0 1px 5px rgba(20, 36, 58, 0.40),
+                 0 0 5px rgba(244, 227, 161, 0.15),
+                 0 0 10px rgba(244, 227, 161, 0.06);
+  }
+  50% {
+    text-shadow: 0 1px 7px rgba(20, 36, 58, 0.45),
+                 0 0 8px rgba(244, 227, 161, 0.36),
+                 0 0 16px rgba(244, 227, 161, 0.16);
+  }
+}
+
+.site-title-block h1 {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: clamp(24px, 3.4vw, 44px);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  animation: titleBreath 8s ease-in-out infinite;
+}
+
+.site-title-block .subtitle {
+  margin: 14px 0 0;
+  font-family: var(--font-title);
+  font-size: 13px;
+  letter-spacing: 0.36em;
+  text-indent: 0.36em;
+  color: rgba(244, 227, 161, 0.82);
+  text-shadow: 0 1px 4px rgba(20, 36, 58, 0.45),
+               0 0 5px rgba(244, 227, 161, 0.18);
+}
+
+/* ============================================================
+   1b. 移动端固定顶栏
+   ============================================================ */
+.mobile-topbar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  background: var(--indigo);
+  padding: 8px 12px;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.32s cubic-bezier(0.4, 0.2, 0.2, 1);
+  box-shadow: 0 2px 12px rgba(20, 36, 58, 0.28);
+}
+
+.mobile-topbar.hidden { transform: translateY(-100%); }
+
+.mobile-bar-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--moon);
+  background: transparent;
+  border: 1px solid rgba(244, 227, 161, 0.5);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.mobile-bar-btn:hover,
+.mobile-bar-btn:active {
+  background: rgba(244, 227, 161, 0.10);
+  border-color: rgba(244, 227, 161, 0.85);
+}
+
+.mobile-bar-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ============================================================
+   1c. 移动端侧边栏背景遮罩
+   ============================================================ */
+.mobile-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(20, 36, 58, 0.50);
+  opacity: 0;
+  transition: opacity 0.32s ease;
+}
+
+.mobile-sidebar-close { display: none; }
+
+/* ============================================================
+   2. 主体布局
+   ============================================================ */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1040px;
+  margin: 42px auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 26px;
+}
+
+@media (min-width: 860px) {
+  .container {
+    grid-template-columns: 330px 1fr;
+    align-items: start;
+  }
+}
+
+.left-column {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabs {
+  position: relative;
+  display: flex;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  box-shadow: 8px 0 0 -7px rgba(28, 51, 80, 0.10);
+}
+
+.tab {
+  flex: 1 1 0;
+  padding: 12px 8px;
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.tab:hover { color: var(--indigo); }
+.tab.active { color: var(--indigo); font-weight: 600; }
+.tab:focus-visible { outline: 2px solid var(--indigo); outline-offset: -2px; }
+
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  height: 4px;
+  background: var(--indigo);
+  transition: left 0.32s cubic-bezier(0.4, 0.2, 0.2, 1);
+  pointer-events: none;
+}
+
+.card {
+  position: relative;
+  padding: 26px 24px 28px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: 8px 8px 0 rgba(28, 51, 80, 0.10);
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(28, 51, 80, 0.10);
+  pointer-events: none;
+}
+
+.card h2 {
+  position: relative;
+  margin: 0 0 18px;
+  padding-bottom: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--indigo);
+  border-bottom: 1px solid rgba(28, 51, 80, 0.16);
+}
+
+.card h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 56px;
+  height: 3px;
+  background: var(--indigo);
+}
+
+.panel { display: none; }
+.panel.active { display: block; }
+.left-column .panel.active { border-top: 0; }
+
+.doc-return-btn {
+  display: none;
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  z-index: 5;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--indigo);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 rgba(28, 51, 80, 0.12);
+  transition: background 0.18s ease, color 0.18s ease,
+              border-color 0.18s ease, transform 0.15s ease,
+              box-shadow 0.15s ease;
+}
+
+.doc-return-btn:hover {
+  color: var(--moon);
+  background: var(--indigo);
+  border-color: var(--indigo);
+}
+
+.doc-return-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 rgba(28, 51, 80, 0.12);
+}
+
+.doc-return-btn:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+.search-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+#searchInput {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 11px 12px;
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+#searchInput::placeholder { color: var(--ink-faint); }
+#searchInput:focus {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(28, 51, 80, 0.12);
+}
+
+#clearBtn {
+  flex: 0 0 auto;
+  padding: 11px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--indigo);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+#clearBtn:hover {
+  color: var(--moon);
+  background: var(--indigo);
+  border-color: var(--indigo);
+}
+
+.hint {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 1.7;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+}
+
+.count {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+}
+
+/* ============================================================
+   3. 索引列表
+   ============================================================ */
+.archive-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(28, 51, 80, 0.10);
+}
+
+.archive-wrap {
+  position: relative;
+}
+
+.archive-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 0;
+  background: var(--indigo);
+  opacity: 0;
+  pointer-events: none;
+  transition: top 0.28s cubic-bezier(0.4, 0.2, 0.2, 1),
+              height 0.28s cubic-bezier(0.4, 0.2, 0.2, 1),
+              opacity 0.28s ease;
+  z-index: 1;
+}
+
+.category {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(28, 51, 80, 0.12);
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--moon);
+  background: var(--indigo);
+  border: 0;
+  border-left: 3px solid var(--moon);
+  border-radius: 0;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.category-header:hover { background: var(--indigo-2); }
+.category-header:focus-visible {
+  outline: 2px solid var(--moon);
+  outline-offset: -2px;
+}
+
+.category-name { flex: 1 1 auto; }
+
+.category-arrow {
+  flex: 0 0 auto;
+  display: inline-block;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--moon);
+  transition: transform 0.32s ease;
+  transform: rotate(90deg);
+}
+
+.category.collapsed .category-arrow {
+  transform: rotate(0deg);
+}
+
+.category-body {
+  display: block;
+  max-height: 2000px;
+  overflow: hidden;
+  transition: max-height 0.36s ease;
+}
+
+.category.collapsed .category-body {
+  max-height: 0;
+}
+
+.category-items {
+  display: block;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.archive-item {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px 8px 14px;
+  font-family: inherit;
+  font-size: 14.5px;
+  letter-spacing: 0.14em;
+  text-align: left;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed rgba(28, 51, 80, 0.12);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 0.28s cubic-bezier(0.4, 0.2, 0.2, 1),
+              color 0.28s cubic-bezier(0.4, 0.2, 0.2, 1),
+              border-color 0.28s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.archive-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--moon);
+  transform: scaleY(0);
+  transform-origin: top center;
+  transition: transform 0.28s cubic-bezier(0.4, 0.2, 0.2, 1);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.archive-item > * {
+  position: relative;
+  z-index: 1;
+}
+
+.archive-item:last-child { border-bottom: 0; }
+
+.archive-item:hover {
+  color: var(--indigo);
+  background: rgba(183, 173, 65, 0.22);
+}
+
+.archive-item.active {
+  color: var(--indigo-2);
+}
+
+.archive-item.active::before {
+  transform: scaleY(1);
+}
+
+.category.collapsed .archive-item.active {
+  color: var(--ink-soft);
+}
+
+.category.collapsed .archive-item.active::before {
+  transform: scaleY(0);
+}
+
+.archive-item:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: -2px;
+}
+
+@keyframes dotPulse {
+  0%, 100% { transform: scale(1);    opacity: 0.75; }
+  50%      { transform: scale(1.18); opacity: 1;    }
+}
+
+.new-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--new);
+  box-shadow: 0 0 6px rgba(41, 73, 143, 0.65);
+  animation: dotPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes itemFlash {
+  0%   { background: rgba(41, 73, 143, 0.28); }
+  100% { background: rgba(39, 70, 110, 0.12); }
+}
+
+.archive-item.just-unlocked {
+  animation: itemFlash 1.6s ease-out 1;
+}
+
+.empty {
+  padding: 16px 10px;
+  font-size: 13.5px;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+/* ============================================================
+   4. 配乐面板
+   ============================================================ */
+.music-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(28, 51, 80, 0.10);
+}
+
+.music-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 14.5px;
+  letter-spacing: 0.12em;
+  text-align: left;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed rgba(28, 51, 80, 0.12);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.music-item:hover {
+  color: var(--indigo);
+  background: rgba(28, 51, 80, 0.06);
+}
+
+.music-item.active {
+  color: var(--moon);
+  background: var(--indigo);
+}
+
+.music-name { flex: 1 1 auto; }
+
+.music-status {
+  flex: 0 0 auto;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+}
+
+.music-item.active .music-status { color: rgba(244, 227, 161, 0.85); }
+
+.music-note {
+  margin: 14px 0 0;
+  font-size: 12px;
+  line-height: 1.75;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+}
+
+/* ★ 新增：音效开关行 */
+.sound-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 12px 12px 8px;
+  border-top: 1px solid rgba(28, 51, 80, 0.10);
+}
+
+.sound-toggle-label {
+  font-family: inherit;
+  font-size: 14.5px;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+}
+
+.sound-toggle {
+  position: relative;
+  flex: 0 0 auto;
+  width: 52px;
+  height: 28px;
+  padding: 0;
+  background: #b9b1a0;
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.28s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.sound-toggle[aria-checked="true"] {
+  background: var(--indigo);
+}
+
+.sound-toggle:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+.sound-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: #fffdf8;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(28, 51, 80, 0.30);
+  transition: transform 0.28s cubic-bezier(0.4, 0.2, 0.2, 1);
+  pointer-events: none;
+}
+
+.sound-toggle[aria-checked="true"] .sound-toggle-knob {
+  transform: translateX(24px);
+}
+
+/* ============================================================
+   5. 正文
+   ============================================================ */
+.doc {
+  position: relative;
+  min-height: 300px;
+  padding: 22px 22px 26px;
+  background: #fffefb;
+  border: 1px solid var(--line);
+}
+
+.doc-id {
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  font-size: 12.5px;
+  letter-spacing: 0.34em;
+  color: #8b7f68;
+  border-bottom: 1px dashed rgba(28, 51, 80, 0.22);
+}
+
+.doc-body {
+  font-size: 17px;
+  line-height: 2.2;
+  letter-spacing: 0.16em;
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.doc-body.is-empty {
+  letter-spacing: 0.06em;
+  line-height: 2;
+  color: var(--ink-faint);
+}
+
+.doc-line {
+  text-indent: 2em;
+  min-height: 1em;
+}
+
+.doc-note {
+  color: var(--ink-faint);
+  font-size: 14px;
+  line-height: 1.95;
+  letter-spacing: 0.08em;
+  font-style: italic;
+  text-indent: 2em;
+  padding: 2px 0;
+  opacity: 0.92;
+}
+
+@keyframes charFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.char-fade { animation: charFade 0.5s ease-out both; }
+.char-type { opacity: 0; }
+.char-type.shown { opacity: 1; }
+.char-none { opacity: 1; }
+
+@keyframes fxShake {
+  0%, 100% { left: 0;      top: 0;     }
+  25%      { left: -1px;   top: 0.5px; }
+  50%      { left: 1px;    top: -0.5px; }
+  75%      { left: -0.5px; top: 0.5px; }
+}
+
+.fx-shake {
+  position: relative;
+  display: inline;
+  animation: fxShake 0.4s linear infinite;
+}
+
+@keyframes fxRedden {
+  from { color: inherit; text-shadow: none; }
+  to   { color: #8b1a1a; text-shadow: 0 0 8px rgba(139, 26, 26, 0.45); }
+}
+
+.fx-red {
+  animation: fxRedden 3s ease-in 0.6s forwards;
+}
+
+.doc-editor {
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.doc-editor.active { display: flex; }
+
+.editor-field { position: relative; }
+
+.editor-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+}
+
+#newDocTitleInput,
+#newDocBodyInput {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  outline: none;
+  caret-color: var(--indigo);
+  resize: none;
+}
+
+#newDocTitleInput:focus,
+#newDocBodyInput:focus {
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(28, 51, 80, 0.12);
+}
+
+#newDocBodyInput {
+  min-height: 220px;
+  line-height: 1.9;
+}
+
+.editor-row-field {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.editor-col-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  position: relative;
+}
+
+.editor-col-category {
+  flex: 0 0 auto;
+  width: 110px;
+}
+
+#newDocCategorySelect {
+  width: 100%;
+  padding: 10px 30px 10px 12px;
+  font-family: inherit;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: var(--moon);
+  background-color: var(--indigo);
+  border: 0;
+  border-left: 3px solid var(--moon);
+  border-radius: 0;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path d='M2 4 L6 8 L10 4' fill='none' stroke='%23f4e3a1' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: background-color 0.15s ease;
+}
+
+#newDocCategorySelect:hover { background-color: var(--indigo-2); }
+#newDocCategorySelect:focus { box-shadow: 0 0 0 3px rgba(41, 73, 143, 0.25); }
+#newDocCategorySelect option { color: var(--ink); background: #ffffff; }
+
+.suggestions {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 5;
+  padding: 6px 0;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: 4px 4px 0 rgba(28, 51, 80, 0.10);
+}
+
+.suggestions.active { display: block; }
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: #b3aca0;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.suggestion-item:hover {
+  background: rgba(28, 51, 80, 0.05);
+  color: var(--ink-soft);
+}
+
+.suggestion-item svg {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  fill: none;
+}
+
+/* ============================================================
+   6. 页脚
+   ============================================================ */
+.site-footer {
+  position: relative;
+  z-index: 1;
+  padding: 10px 20px 100px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+}
+
+/* ============================================================
+   7. 悬浮按钮组
+   ============================================================ */
+.floating-buttons {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.float-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 128px;
+  padding: 11px 16px;
+  font-family: inherit;
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  color: var(--indigo);
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  cursor: pointer;
+  box-shadow: 4px 4px 0 rgba(28, 51, 80, 0.12);
+  transition: background 0.18s ease, color 0.18s ease,
+              border-color 0.18s ease, transform 0.15s ease,
+              box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.float-btn:hover {
+  color: var(--moon);
+  background: var(--indigo);
+  border-color: var(--indigo);
+}
+
+.float-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 rgba(28, 51, 80, 0.12);
+}
+
+.float-btn:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+}
+
+.float-btn svg {
+  flex: 0 0 auto;
+  width: 15px;
+  height: 15px;
+}
+
+/* ============================================================
+   8. 制作声明弹窗
+   ============================================================ */
+.modal-mask {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(20, 36, 58, 0.55);
+  padding: 48px 24px;
+  overflow-y: auto;
+}
+
+.modal-mask.active { display: block; }
+
+.modal {
+  position: relative;
+  width: min(560px, 100%);
+  margin: 0 auto;
+  padding: 34px 28px 30px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: 10px 10px 0 rgba(28, 51, 80, 0.18);
+}
+
+.modal::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(28, 51, 80, 0.10);
+  pointer-events: none;
+}
+
+.modal h3 {
+  margin: 0 0 22px;
+  padding-bottom: 12px;
+  font-family: var(--font-title);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  color: var(--indigo);
+  border-bottom: 1px solid rgba(28, 51, 80, 0.16);
+}
+
+.modal-body {
+  font-size: 14.5px;
+  line-height: 2.1;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-family: inherit;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--indigo);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.modal-close:hover {
+  color: var(--moon);
+  background: var(--indigo);
+  border-color: var(--indigo);
+}
+
+/* ============================================================
+   9. 成就跳出
+   ============================================================ */
+.achievement-toast {
+  position: fixed;
+  right: 22px;
+  bottom: 10px;
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px 12px 14px;
+  background: var(--indigo);
+  border: 2px solid var(--moon);
+  color: var(--moon);
+  font-family: var(--font-title);
+  font-size: 14.5px;
+  letter-spacing: 0.16em;
+  min-width: 220px;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.achievement-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.achievement-icon {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+}
+
+.achievement-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.achievement-text {
+  flex: 1 1 auto;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   10. 响应式
+   ============================================================ */
+@media (max-width: 1200px) {
+  .moon-inner { width: 46%; }
+}
+
+@media (max-width: 859px) {
+  .site-header { padding: 1.2cm 16px; padding-top: calc(1.2cm + 52px); }
+  .moon-inner  { width: 62%; gap: 14px; }
+  .container   { margin: 26px auto; gap: 18px; }
+  .card        { padding: 20px 18px 22px; box-shadow: 6px 6px 0 rgba(28, 51, 80, 0.10); }
+  .doc         { min-height: 220px; padding: 18px 16px 20px; }
+  .doc-body    { font-size: 16px; letter-spacing: 0.1em; }
+
+  .mobile-topbar { display: flex; }
+
+  .mobile-sidebar-backdrop.active {
+    display: block;
+    opacity: 1;
+  }
+
+  .floating-buttons {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: 0;
+    width: 65%;
+    max-width: 320px;
+    padding: 72px 20px 24px;
+    background: var(--indigo);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    transform: translateX(-100%);
+    transition: transform 0.32s cubic-bezier(0.4, 0.2, 0.2, 1);
+    z-index: 1400;
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.30);
+  }
+
+  .floating-buttons.active { transform: translateX(0); }
+
+  .float-btn {
+    min-width: 0;
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 15px;
+    justify-content: flex-start;
+    color: var(--moon);
+    background: var(--indigo-2);
+    border: 0;
+    border-left: 3px solid var(--moon);
+    box-shadow: none;
+  }
+
+  .float-btn:hover,
+  .float-btn:active {
+    color: var(--moon);
+    background: #2f5286;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .float-btn:focus-visible {
+    outline: 2px solid var(--moon);
+    outline-offset: -2px;
+  }
+
+  .floating-buttons #logoutBtn {
+    margin-top: auto;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid rgba(244, 227, 161, 0.55);
+    border-left: 1px solid rgba(244, 227, 161, 0.55);
+    color: var(--moon);
+  }
+
+  .floating-buttons #logoutBtn:hover,
+  .floating-buttons #logoutBtn:active {
+    background: rgba(244, 227, 161, 0.10);
+  }
+
+  .floating-buttons #logoutBtn svg { stroke: var(--moon); }
+
+  .mobile-sidebar-close {
+    display: flex;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    left: auto;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: var(--moon);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    cursor: pointer;
+  }
+
+  .mobile-sidebar-close svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .mobile-sidebar-close:hover {
+    background: rgba(244, 227, 161, 0.12);
+  }
+
+  #panel-doc {
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  #panel-doc #docCard {
+    border-top: 0;
+    margin-top: 0;
+    padding: 20px 18px 22px;
+    box-shadow: 6px 6px 0 rgba(28, 51, 80, 0.10);
+  }
+
+  #panel-doc #docCard::before { inset: 5px; }
+
+  .tab-indicator { width: 60px; }
+
+  .doc-return-btn {
+    top: 14px;
+    right: 14px;
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+
+  body.mobile-editor-mode .left-column {
+    display: none;
+  }
+
+  .achievement-toast {
+    top: 74px;
+    left: 14px;
+    right: auto;
+    bottom: auto;
+    min-width: 0;
+    max-width: calc(100vw - 28px);
+    font-size: 13.5px;
+    padding: 10px 16px 10px 12px;
+    transform: translateY(-20px);
+  }
+  .achievement-toast.show {
+    transform: translateY(0);
+  }
+  .achievement-icon { width: 26px; height: 26px; }
+}
+
+@media (max-width: 560px) {
+  .site-header { padding: 1cm 12px; padding-top: calc(1cm + 52px); }
+  .moon-inner  { width: 78%; min-width: 0; gap: 10px; }
+  .editor-col-category { width: 96px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+  .char-fade { opacity: 1 !important; }
+  .char-type { opacity: 1 !important; }
+}
+</style>
+</head>
+
+<body>
+
+  <div class="mobile-topbar" id="mobileTopbar">
+    <button type="button" class="mobile-bar-btn" id="mobileMenuBtn"
+            aria-label="打开侧边栏">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <line x1="3" y1="6"  x2="21" y2="6"  />
+        <line x1="3" y1="12" x2="21" y2="12" />
+        <line x1="3" y1="18" x2="21" y2="18" />
+      </svg>
+    </button>
+    <button type="button" class="mobile-bar-btn" id="mobileHomeBtn"
+            aria-label="返回首页">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 11 L12 4 L21 11 L21 20 L15 20 L15 14 L9 14 L9 20 L3 20 Z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop"></div>
+
+  <header class="site-header">
+    <div class="moon-sky" id="moonSky" aria-hidden="true">
+      <div class="moon-inner" id="moonInner">
+        <div class="moon-row" id="moonPhaseRow"></div>
+
+        <div class="water-ripple">
+          <svg viewBox="0 0 400 26" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <ellipse cx="200" cy="13" rx="197" ry="11.4" />
+            <ellipse cx="200" cy="13" rx="147" ry="8.4"  />
+            <ellipse cx="200" cy="13" rx="99"  ry="5.6"  />
+            <ellipse cx="200" cy="13" rx="53"  ry="3"    />
+          </svg>
+        </div>
+
+        <div class="moon-row" id="moonMikazukiRow"></div>
+      </div>
+
+      <div class="site-title-block" id="siteTitleBlock">
+        <h1>晚上好，月亮</h1>
+        <p class="subtitle">连接起昨夜，今夜与无数个日日夜夜</p>
+      </div>
+    </div>
+  </header>
+
+  <noscript>
+    <p style="text-align:center;color:#a89b84;letter-spacing:.1em;">
+      本页面需要启用 JavaScript 才能显示档案目录。
+    </p>
+  </noscript>
+
+  <main class="container">
+
+    <div class="left-column">
+
+      <div class="tabs" role="tablist" id="tabsBar">
+        <button type="button" class="tab active" data-panel="index" role="tab">索引</button>
+        <button type="button" class="tab" data-panel="music" role="tab">配乐</button>
+        <button type="button" class="tab" data-panel="doc" role="tab"
+                id="docTabBtn" style="display:none;">正文</button>
+        <div class="tab-indicator" id="tabIndicator"></div>
+      </div>
+
+      <section class="card panel active" id="panel-index" role="tabpanel">
+        <div class="search-box">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="输入档案名以解锁"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="输入档案名">
+          <button type="button" id="clearBtn">清空</button>
+        </div>
+
+        <p class="hint">
+          仅当输入与档案名完全一致时，档案才会出现。<br>
+          输入后无需按回车，程序会自动识别。
+        </p>
+
+        <p class="count">
+          已解锁 <span id="count">0</span> 篇记录
+        </p>
+
+        <div class="archive-wrap">
+          <ul class="archive-list" id="archiveList"></ul>
+          <div class="archive-indicator" id="archiveIndicator"></div>
+        </div>
+      </section>
+
+      <section class="card panel" id="panel-music" role="tabpanel">
+        <ul class="music-list" id="musicList"></ul>
+
+        <p class="music-note">
+          仅当浏览器允许自动播放时，配乐才会生效。<br>
+          "从本地导入"仅当前设备、当前会话有效，刷新后失效。
+        </p>
+
+        <!-- ★ 新增：音效开关 -->
+        <div class="sound-toggle-row">
+          <span class="sound-toggle-label">音效</span>
+          <button type="button" class="sound-toggle" id="soundToggle"
+                  role="switch" aria-checked="true" aria-label="音效开关">
+            <span class="sound-toggle-knob"></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-doc" role="tabpanel"></section>
+
+    </div>
+
+    <section class="card" id="docCard" aria-labelledby="card-doc">
+      <h2 id="card-doc">正文</h2>
+
+      <button type="button" class="doc-return-btn" id="docReturnBtn">返回</button>
+
+      <div class="doc" id="docView">
+        <div class="doc-id" id="docId">—— —— ——</div>
+        <div class="doc-body is-empty" id="docBody">
+          尚未选择档案。请在上方输入档案名以解锁。
+        </div>
+      </div>
+
+      <div class="doc-editor" id="docEditor">
+        <div class="editor-field editor-row-field">
+          <div class="editor-col-title">
+            <label class="editor-label" for="newDocTitleInput">标题</label>
+            <input type="text" id="newDocTitleInput" readonly
+                   placeholder="请输入标题" autocomplete="off">
+            <div class="suggestions" id="titleSuggestions">
+              <div class="suggestion-item" data-index="1">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/>
+                  <polyline points="12 7 12 12 15.5 14"/>
+                </svg>
+                <span>早上好，太阳</span>
+              </div>
+              <div class="suggestion-item" data-index="2">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/>
+                  <polyline points="12 7 12 12 15.5 14"/>
+                </svg>
+                <span>永恒的第七秒</span>
+              </div>
+              <div class="suggestion-item" data-index="3">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/>
+                  <polyline points="12 7 12 12 15.5 14"/>
+                </svg>
+                <span>近侍</span>
+              </div>
+            </div>
+          </div>
+          <div class="editor-col-category">
+            <label class="editor-label" for="newDocCategorySelect">分类</label>
+            <select id="newDocCategorySelect" aria-label="选择分类">
+              <option value="词条">词条</option>
+              <option value="日志">日志</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="editor-field">
+          <label class="editor-label" for="newDocBodyInput">正文</label>
+          <textarea id="newDocBodyInput" readonly
+                    placeholder="请输入正文"></textarea>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    Touken Ranbu Online · Fanmade Platform 
+  </footer>
+
+  <div class="floating-buttons" id="floatingButtons">
+    <button type="button" class="mobile-sidebar-close" id="mobileSidebarClose"
+            aria-label="关闭侧边栏">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <polyline points="15 6 9 12 15 18"/>
+      </svg>
+    </button>
+
+    <button type="button" class="float-btn" id="newDocBtn">新建文档</button>
+    <button type="button" class="float-btn" id="aboutBtn">制作声明</button>
+    <button type="button" class="float-btn" id="logoutBtn">
+      <svg viewBox="0 0 24 24" aria-hidden="true" fill="none"
+           stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 11 a7 7 0 1 0 14 0" />
+        <line x1="12" y1="4" x2="12" y2="11" />
+      </svg>
+      登出
+    </button>
+  </div>
+
+  <div class="modal-mask" id="aboutModalMask" role="dialog" aria-modal="true"
+       aria-labelledby="aboutModalTitle">
+    <div class="modal" id="aboutModal">
+      <button type="button" class="modal-close" id="aboutModalClose"
+              aria-label="关闭">×</button>
+      <h3 id="aboutModalTitle">制作声明</h3>
+      <div class="modal-body" id="aboutModalBody"></div>
+    </div>
+  </div>
+
+  <div class="achievement-toast" id="achievementToast" aria-live="polite">
+    <div class="achievement-icon" id="achievementIcon"></div>
+    <div class="achievement-text" id="achievementText"></div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+
+  var CATEGORIES = ["词条", "日志"];
+
+  var ARCHIVES = [
+    { id: "词条说明", category: "词条", body:"给三日月：\n"+
+      "我在尝试给本丸的所有人搭建个人网站平台。\n"+
+      "%%!不过，给你的网站做了点特殊设计，有没有被我的小巧思感动到？\n"+
+      "趁着这个机会，不如你也来试试接触现代科技，怎么样？本丸的预算目前还很充裕，时政那边又在推行无纸化办公，尝试一下使用电子产品也没什么不好吧？\n"+
+      "目前给你设置了“词条”和“日志”两个栏目，词条可以从时政wiki上搜索一些常用名词并用你的口吻进行复述，用来练习打字或者锻炼思维能力都很不错吧？日志可以记录一些生活中的琐碎小事，或者当作记事本使用。\n"+
+      "常用这些功能的话，说不定能预防老年痴呆哦？网站还在试运行阶段，老爷爷有任何问题都可以随时问我或者药研，这些天长谷部也学会了不少上网的办法。不过……我记得你和他的关系似乎有点微妙……？不管怎么说，大家都是同生共死的战友，还是要搞好关系的吧！\n"+
+      "第一个词条嘛……我想想……就写“电子产品”，怎么样？\n"+
+      "%%!让我笑一会儿……这简直就是天底下和你最不搭的词语了……这是鹤丸的主意，不要说是我告诉你的：D\n"+
+      "特别提醒1：服务器偶尔会不定时更新，可能会导致词条和日志暂时无法从索引找到，但文章本身并没有丢失，只要再次搜索已发布的内容标题就可以找回。不过，如果半途点击了登出，之前的所有工作就都要重新开始了。\n"+
+      "特别提醒2：写词条的时候，最好不要加上其他特殊符号。我还在研究如何让搜索功能更完善，但以我现在的代码水平还做不到模糊匹配。词条标题里的任何特殊符号都会干扰搜索，不要随便滥用啊！\n"+
+      "特别提醒3：我想到了，不如让每个词条都可以勾连上其他词条或日志标题吧！就算碰巧忘记了其中一篇，也能靠另一篇里的内容推理出来。这个点子不错吧？\n"+
+      "%%!真的有在努力写……已经是……第三天了？！比我想象中还要有毅力呢。\n"+
+      "\n"+
+      "\n"+
+      "审神者 敬上" },
+
+    { id: "晚上好，月亮", category: "词条", requires: "永恒的第七秒", body: "锵锵！喜欢这个网站吗？\n" +
+     "是我熬夜写了四天才赶出来的得意之作呢。\n" +
+     "虽然写得有些仓促，但好歹是完成了，有没有让你爱不释手、想要每天都在上面写点东西呢？\n" +
+     "嗯……大概你也听说了吧，今年之后，我会被暂时调离本丸、归期未定这件事。虽说可以拒绝……抱歉，时政安排了几次与受损本丸中的刀剑男士代表的会面，我还是……不忍心看到那些孩子们哭泣的样子，只能答应下来了。\n" +
+     "我们的本丸、以及我这个审神者，能被时政评价为建设效果优异的本丸，在各类支援活动中优先考虑，这都是多亏了大家的努力，只靠我一个人是做不到这些的。\n" +
+     "因此，我们也有更多义务，让自己的能力在正确的场合得以发挥，不是吗？虽然还有半年时间，但果然还想要留下更多和你们有关的回忆。\n" +
+     "有这个网站存在的话，也许我们之间的联系也就不会因为时空上的分离而中断了吧？\n" +
+     "%%!所以，请不要为我的离去而难过。哪怕我们终有一别。如果不是现在将要“生离”，那我们的下一别就是死亡啊。只凭借人类之躯是无法战胜死亡的。\n"+
+     "大概就是这样了……我把你的修行之旅预定在了本月的23日……预祝你极化顺利！\n" +
+     "%%!就算失败了也没有关系。毕竟，你是我最骄傲的刀啊。\n"+
+     "\n" +
+     "\n" +
+     "审神者 再次敬上" },
+
+    { id: "电子产品", category: "词条", body:"我的名字是三日月宗近，天下五剑之一，被称为最美的刀……嘛，但目前只是个不太会打字的老爷爷而已。\n"+
+      "%%!别这么说嘛！就算是老爷爷，也是最美的那个……\n"+
+      "主人希望我更好地了解并接触现代社会，所以，我也会认真学习现代生活所必须的技艺。\n"+
+      "%%!居然是为了我吗？一整个下午居然都缩在小小的屏幕前的样子真的很可爱，所以忍不住悄悄拍了好几张照片。为了掩盖住相机快门的声音，不得不和路过的孩子们大声玩闹了很久。\n"+
+      "主人提起过，正确的打字姿势要让两只手都放在键盘上，视线则必须看向屏幕，这样一来，也就难免手忙脚乱。明明付丧神也是物体化作的人形，居然不能自然而然地掌握其他物品的使用方法，真是相当麻烦啊。不过幸好，我还有充足的时间。\n"+
+      "%%!难得看到三日月局促的样子，这也是没办法的嘛。\n"+
+      "虽然这么说，难道打字一事很难立刻学出成效吗？何时才能熟悉使用电子产品呢？\n"+
+      "哈哈，说笑的，老爷爷也没有老到这个程度吧。\n"+
+      "%%!做喜欢的事情时就说自己还没有很老，面对不想做的事又总说自己已经不再年轻了，真是个任性的人啊。\n"+
+      "无论主人想要什么，作为臣下的都应勉励执行，无可抱怨嘛。况且，那位主君也从来没什么坏心眼，倒是我这个老头子……\n"+
+      "%%!老头子终于承认自己不是什么好人了！\n"+
+      "嗯嗯，其他事项还是勿言太多，多要留意为好，不可在同一条记录中诉说太多，此之谓“网络安全”嘛。\n"+
+      "%%!好生硬的衔接\n"+
+      "\n"+
+      "\n"+
+      "令和八年六月十九日" },
+
+    { id: "网络安全", category: "词条", body: "在身负近侍职责时，尝试问了主人何谓“网络安全”，主人便就此发表了一段有些云里雾里的言论。大体上说，和电子产品有关的事物，都会有遭到入侵的可能。为了维护电子产品不被入侵所做出的事项，都可以归于网络安全类里。\n"+
+     "%%!明明是三日月没有听懂吧……！\n"+ 
+     "就像本丸抵御大侵寇和时间溯行军那样？哈哈，或许说得有些夸张了。\n"+
+     "%%!确实有点过于紧绷了呢。不过，尽量少去点击不明链接、上网时多留意隐私信息才是对的吧？\n"+
+     "……\n"+
+     "会不会真的被说中了呢？不过……\n"+
+     "嘛，既然是可以入侵之物，就必然是拥有形体的，而有形之物终会消散……就算再难，大概也会有像鬼一样退治的办法吧。\n"+
+     "%%!如果把网络病毒也认为是一种病毒的话……\n"+
+     "如果到了必要的时刻，为了守护主君的安危，我这个老爷爷也要身先士卒地斩杀鬼怪才是。在那之后，或许就会凭借这段守护主上的逸闻，改叫“鬼切”之类的名字吧？\n"+
+     "%%!听起来一点也不风雅呢。而且老土。而且本丸里也已经有一个鬼切了！\n"+
+     "……\n"+
+     "……\n"+
+     "……果然，还是被那个人叫做“三日月”比较好呢。\n"+
+     "%%!嗯嗯……！还是三日月比较好呢。\n"+
+     "啊，话说回来，这似乎是主君为我建立的专属网站，既然如此，不尽快介绍一下自己的情况可就太失礼了。啊，主人似乎有要吃粽子的意向，是在叫我赶去一同享用吧？必须尽快起身才是。\n"+
+     "也就是说，这篇记录即将要走到尾声了呢，呼呼。连着写两篇文字真是相当费力，几乎每打一个字都要思考半晌。等到哄主人睡下后，再来写今天的日志吧。\n"+
+     "\n"+
+     "\n"+
+     "令和八年六月十九日" },
+
+    { id: "日志说明", category: "日志", body: "仿照主人的格式，新建了一篇关于说明，但总是想不好究竟要归到哪个分类下面。\n" +
+     "嘛，算了，就把它放在日志最上面好了。看起来也比较美观。\n" +
+     "%%!这么说的话……等我想想……\n"+
+     "日志的格式：\n" +
+     "用年份+月份+日期的格式，例如“令和八年六月十九日”，这天也是我第一天写日志呢，呵呵。\n" +
+     "%%!“呵呵”这个语气词在中文里的含义已经扭曲了……\n"+
+     "如果找不到的话，有可能是字数限制的缘故，分成了多篇上传。\n" +
+     "%%!我有设置这个吗？改天查一下代码好了。\n"+
+     "某天一直在偷懒、完全没有动笔（还是手？）的情况也是可能存在的。不过，如果当天上传了词条，那就不太可能不写日志了。\n" +
+     "除此之外的情况……？会有其他情况吗？^^\n" +
+     "%%!原本就想说这个语气有点不对劲………………居然真的有其他情况吗！\n"+
+     "\n" + 
+     "\n" +
+     "——2026.9.25已编辑——" },
+
+    { id: "令和八年六月十九日", category: "日志", body:"今日是端午呢。呵呵，以为我忘记了？主人自就任审神者以来，已经多年身处异乡，不闻乡音之时日久矣。\n" +
+      "%%!待在你们身边的话，就已经是一个热闹的家庭了。\n"+
+      "既然如此，不妨也为主君提供些老年人的智慧，聊以解忧吧？虽然只是区区一把夺人性命的太刀，但也积累了些许不吐不快的话语呢。\n" +
+      "%%!也就是说，平时有很多不满都没有来得及说的意思吗？！\n"+
+      "……虽说有如此想法，但在亲眼目睹主人与其他刀剑在我的门前大闹的情形……不，什么也没有。我也乐见主人心情愉悦的样子。\n"+
+      "%%!在吃醋吗？\n"+
+      "啊啊，果然，主人尚且年轻，还是更愿意与活泼的青年人玩耍吗？明明老爷爷我也相当活泼？\n"+
+      "%%!老爷爷不愿意来找我聊天就是因为这个吗？\n"+
+      "\n"+
+      "\n"+
+      "%%!感觉说的并不只是蝉呢↓\n"+
+      "今年的蝉似乎颇有些聒噪" },
+
+    { id: "蝉", category: "词条", body: "蝉是一种是半翅目昆虫，截至目前，世界各地已发现有3000余种。根据种类不同，属于中等至大型昆虫。通常有短触角、两对透明的膜质翅膀、突出的复眼，以及在复眼之间形成三角形的三个简单眼睛。\n"+
+     "{{shake|蝉在交配前会发出求偶声。}}\n"+
+     "%%!长谷部只是来找我聊极化修行的事啊！与其说是老爷爷，不如说是老醋坛子吧？不过，这篇词条已经开始像点样子了呢，有在认真研究呢。\n"+
+     "\n"+
+     "虽说加上日志，今日已经完成了三篇打字练习，但果然，还是被蝉吵得太凶了，在如此烦闷的夏夜里，根本无法入眠啊。\n" +
+     "%%!不开电风扇吗？木制房屋的隔音确实不好，之前和博多说了修缮的事，但迟迟凑不齐款项，今年的款子都被拿来给大家买电子产品了……\n"+
+     "本体还相当凉爽，究竟为何人身却如此燥热呢？明明节气里的夏天还没能到来。是因为主人还在屋外和那些孩子们嬉笑吗？倘若本丸重要的主人因此受风，又该如何才好？\n" +
+     "%%!不开电风扇吗？！连小短刀们的醋也要吃吗？！我就那么弱不禁风吗？！\n"+
+     "今天的近侍不是我。这种时候出现、然后苦口婆心地说教一通也并不符合我一贯的风格吧？如此，也是无可奈何的事啊。\n"+
+     "%%!这两个月的近侍轮班表已经公布出来了，没有我黑箱操作的余地……九月会给你多加几次近侍机会的。\n"+
+     "好吵。\n"+
+     "%%!没钱做隔音真是对不起了！（不是在道歉）\n"+
+     "\n"+
+     "\n"+
+     "令和八年六月十九日夜" },
+
+    { id: "令和八年六月二十日", category: "日志", body: "今日没有出阵的安排，万幸。昨天被蝉鸣烦扰了整夜，没能睡个好觉，如若在这时收到出阵迎敌的命令，恐怕战力会大大减损吧。\n" +
+      "%%!对啊，究竟是谁临时熬夜改了出阵名单呢？是谁呢？\n"+
+      "烛台切君的便当一如既往地美味呢；而长谷部君……一如既往地对主人相当殷勤呢。这并非对待主君的教导，时间久了会让主人染上坏习惯的。\n" +
+      "%%!说得好像半年的放松十恶不赦似的……还是不想接受我即将离开的现实吗？\n"+
+      "今天就从比较基础的词语入手好了，比如主人受时之政府承认的正式职位名，比如我的名字。\n"+
+      "%%!提示放在文中的话，不仔细看就容易略过呢。\n"+
+      "啊啊……暂时不是很想写付丧神的事。至少今天不想。\n"+
+      "%%!结果转天就写了？嘴硬。\n"+
+      "……\n"+
+      "午饭后在笔记本上安装了几个主人推荐的小游戏，并不是为了转移注意力才下载的，只是恰巧听说这类游戏也有锻炼打字能力的功能。\n"+
+      "%%!还在嘴硬。\n"+
+      "不过，果然是老爷爷跟不上潮流吗？游戏谜题的难度也相当高呢。虽然谜题本身就已经具备了一定魅力，但还是把它解开才会更为愉悦吧？哈哈……\n"+
+      "%%!卡关了呢。对三日月来说，能坦然承认这点真不容易。\n"+
+      "太过复杂的解法果然还是很难一次性记住啊，对了，不如多创建一个新词条来记录常用的办法好了。就叫……“解密的办法”吧。\n"+
+      "\n"+
+      "\n"+
+      "%%!看了一整天的电脑导致的↓\n"+
+      "夕阳略有些刺眼"},
+
+    { id: "审神者", category: "词条", body:"“审神者”一词，通常被用来指代那些能够分辨神明与妖怪、洞察并执行神明意图的人，在神道教中有着重要的地位。\n"+
+     "%%!不过，对你们来说，我应该不是这么严肃的存在吧？对吧？我没有太端着架子吧？\n"+
+     "为了让历史不被破坏，时之政府从人类中选拔培训出富含灵力的个体，任命其作为“审神者”，用以唤醒刀剑男士、抗击时间溯行军。对于刀剑男士而言，审神者既是所有者，也是君主，更是赋予了前者人类之躯的存在。\n"+
+     "%%!这个算是……得来不易的夸奖吗？嘿嘿……\n"+
+     "通常，审神者与刀剑男士之间存在着超出常人想象的紧密联系，刀剑男士日常赖以行动作战的灵力，基本都由其本丸的审神者提供。\n"+
+     "%%!嗯。原来你在决定神隐之前就已经清楚地知道这些事了。\n"+
+     "\n"+
+     "这就是我的主人。虽然官方的称呼是审神者，但我果然还是不太习惯这个叫法。主人就是主人，正是因为能和前代主君完全区分开，所以沿用同一种叫法也不会感到异样呢。\n"+
+     "%%!能得到三日月的肯定，相当荣幸呢。\n"+
+     "主人就是主人，就像月亮就是月亮一样。就算望见了那么多次月亮，也完全无法洞穿它的真实面目呢……\n"+
+     "%%!明明更像月亮的人是你才对吧。\n"+
+     "我心目中的主人吗？有时会像小孩子那样惯于撒娇，也不常用心处理文书，嗯，这样的时候比较多呢。当然，在真正的困境面前也相当可靠，不过，毕竟这样的时候是少数呢。\n"+
+     "%%!我就当你这句也是在夸奖好了↑\n"+
+     "身为刀剑，我的职责就是守护主人。让主君频繁陷入困境之中，乃是我们这些付丧神的失职。\n"+
+     "%%!解决你们的困难、抚平你们内心的伤痕也是我的职责哦？\n"+
+     "主人平时也都相当懒散，不知道究竟是被谁惯坏了。哈哈，那位压切大人应该颇有嫌疑……这也是他爱着主君的方式吧。\n"+
+     "%%!……我会尽可能忍住，不在这半年内揍你的。你生气的时候就会故意使用敬语呢。\n"+
+     "……去小睡片刻吧。\n"+
+     "%%!明明你也还是一如既往地喜欢偷懒啊！\n"+
+     "……\n"+
+     "……应该找个机会写一写长谷部君的事呢。\n"+
+     "%%!应该不会用什么好词吧。\n"+
+     "……\n"+
+     "……说到底，这种行为总归不太健康吧？找时间应当对主予以规劝才是。主人是个很好的孩子，大概只是被其他刀剑引诱了。\n"+
+     "%%!最经常引诱我的人明明是你吧！\n"+
+     "嗯，我很漂亮呢。明日就用这张被主人夸赞过的脸去劝导主人吧。\n"+
+     "\n"+
+     "\n"+
+     "令和八年六月二十日" },
+
+    { id: "三日月宗近", category: "词条", body: "自我介绍的话，确实应该为自己创建一个合适的词条呢。\n"+
+     "我是平安时代由著名刀匠三条宗近锻造的太刀，被称作“名物中的名物”呢，呵呵。\n"+
+     "%%!居然没有第一时间说自己是“最美”的那个……有点不习惯\n"+
+     "“三日月”之称则来源于刀身上的新月形打除刃纹，很不错吧？多亏这个，才能被历代的主人珍爱至今……因此才得以遇到如今的主人。说是令我感到自豪的纹样也不为过。\n"+
+     "%%!虽然很美丽但也是伤痕啊。但它们也让你成为了现在的样子。不过，如果是三日月的话，什么样子我都会喜欢的。\n"+
+     "不过，也正因为国宝或者逸闻之类的虚名，才会导致主人不常使用我吧？至少对我来说，仍然不够呢。\n"+
+     "%%!你偷懒逃番的时候可不是这么说的！\n"+
+     "虽然是宝贝，但究竟还是物品。在形体被磨损、不得不接受消亡之前，被心爱之人爱不释手地使用才更好吧？哈哈，说了些相当任性的话呢。\n"+
+     "%%!就算一身伤痕也没关系吗？\n"+
+     "这么说来，电脑呦，不妨也向你介绍我的主君吧？不过，要用那个名字称呼主人还是很不习惯啊，总觉得有些冷冰冰的。\n"+
+     "%%!厚厚厚，果然，我的调教还是相当有成果的……\n"+
+     "哈哈，明明我的本体也是冷冰冰的呢。\n"+
+     "%%!还是亮闪闪的……\n"+
+     "况且，那个人毕竟也是我的主人，不在重要场合做出必要的礼节是不行的。正所谓“拿钱办事”呢。\n"+
+     "主人的事，嘛……就不在这里多说了，毕竟是个人隐私嘛。\n"+
+     "%%!其实已经说了不少了吧！\n"+
+     "\n"+
+     "\n"+
+     "令和八年六月二十日" },
+
+    { id: "解密的办法", category: "词条", body: "嗯……网上说，通常的谜题一共有以下几种类型：\n" +
+     "1. 逻辑推理谜题，这类谜题可以根据已有的信息推导出未知却必然的结果。排除所有不正确的选项之后，必然会存在一个唯一的正确答案；\n" +
+     "%%!换而言之，就算再怎么不愿相信，也必须接受事实呢。\n"+
+     "2. 观察谜题，这类谜题需要逐字逐句阅读细节才能有所收获，同时还考验玩家对规律的把握；\n" +
+     "%%!以三日月的粗心程度，很难发现这些细节，但以三日月的细心程度，发现这些细节又不在话下。\n"+
+     "3. 图形谜题，这类谜题通常需要通过视觉观察和分析来解决，也可能需要运用一些对字形的抽象理解能力。嘛。看到有人说：小写字母e在古代的写法与数字3很接近，小写字母b和s则很像是数字6和5，大写字母A和4从远处看也非常近似，数学啊，真是奇妙呢；\n" +
+     "%%!这是暗号吗？编码？术语？按照出现的顺序……？各种密码表……？不行……完全搞不懂。\n"+
+     "4. 文字谜题，这类谜题有时就是字面意思，有时则可能与字面含义完全相反，但游戏中，可以说每一个字、每一句话都是作者精心设计的内容吧？被保留下来的内容里，应该不会存在毫无作用的语句……吧？我也只是猜测而已。\n" +
+     "%%!文字是种很有迷惑性的事物呢……\n"+
+     "\n"+
+     "目前的游戏里……有一大串毫无头绪的乱码，还有一张写着ba53-bA的纸片，究竟是什么意思呢？\n"+
+     "%%!等一下，我好像知道是什么了……\n"+
+     "游戏提示说：不一定所有字符都要被替换；最后的答案是小写字母单词和数字的组合；纸片上的“-”应该就是这个字符本身，并没有经过任何变形。还是很难解出答案啊。\n"+
+     "%%!嗯……\n"+
+     "这篇的内容似乎有点多，等到看懂提示之后就再根据答案新建一个新词条好了。\n"+
+     "\n"+
+     "\n"+
+     "令和八年六月二十日" },
+
+    { id: "付丧神", category: "词条", body: "付丧神又称“九十九神”，一般的定义是指那些长久以来沾染人类气息、却最终被丢弃之物，因其心生怨念而化作的妖怪。\n" +
+     "%%!我永远也不会丢下你们的。\n"+
+     "对于拥有逸闻、被审神者以灵力唤醒的刀剑来说，其形态称为最强付丧神也不为过……只不过和他们的同类不同，在这个世界的某处，还有人在需要着他们。\n" +
+     "%%!其实很想说：比如，那些正确时间线上的人们，但似乎大家都会因为时间线的自动挡修正能力而忘记你们呢……那么，至少我会需要你们。\n"+
+     "\n" +
+     "虽然昨天在日志里说了不太想写这些东西，但果然还是应该把词条写完，人应当有始有终嘛。\n" +
+     "%%!三日月说出这种话就像是……长谷部说出：“抱歉，这件事还是让别的刀剑男士来做吧，我要休息了。”之类的言论一样惊悚。\n"+
+     "今天发生了不少事情，所以日志被拆开，分为了“其一”和“其二”两篇。嘛，今天就偷个懒，只写这一个词条好了。\n" +
+     "%%!发生了不少事情：和长谷部争宠。\n"+
+     "\n" +
+     "\n" +
+     "令和八年六月二十一日" },
+
+    { id: "令和八年六月二十一日其一", category: "日志", body: "向主人说了长谷部君有些要惯坏她的倾向，主人却只是轻轻笑了笑，并不回应。\n" +
+     "%%!对我的睡眠有利的事情……没有拒绝的可能！\n"+
+     "“为什么要纵容长谷部君呢？”我这样问。呵呵，能有此问并非我真的有所疑惑。这把刀在将军政要之间多次转手，也跟随高僧旁听过许多参禅的道理，就算许多记忆沉入历史的长河，我也自认为并不算是呆傻愚笨之人。但我还是这样问了，不知为何，我很想知道审神者究竟对此抱以何种看法。\n" +
+     "%%!我怀疑你心里非常清楚“呵呵”的实际意思。\n"+
+     "主人挑起一边的眉毛：“那么，三日月，你又为何对他事事看不顺眼呢？”\n" +
+     "%%!这是事实嘛。\n"+
+     "“哈哈，压切长谷部君事事忠心，我们又为何要从中生出龌龊呢？”我哈哈一笑，反问道。\n" +
+     "%%!在说反话吧！\n"+
+     "“你总是这样，”主人举起茶盏，慢慢悠悠地啜饮了一口，似笑非笑地看着我，“把他当作敌人看待。”\n" +
+     "“我对本丸的所有人都不会这样哦？毕竟大家都是——”这是发自内心的实话。\n" +
+     "%%!是假话。但你也是真心关爱着每一个人的。仅限于不争宠的时候。\n"+
+     "“说谎。”主人的眼睛直勾勾地盯着我：\n" +
+     "%%!害怕了吗？\n"+
+     "“你这些天都在躲着我，是不是？”\n" +
+     "“……”\n" +
+     "“……”\n" +
+
+     "\n" +
+     "\n" +
+     "（未完）" },
+
+    { id: "令和八年六月二十一日其二", category: "日志", body:"“……啊啊，被发现了吗？哈哈……”\n" +
+     "%%!完全感受不到被发现的心虚呢。\n"+
+     "“你究竟是怎么了，三日月？”\n" +
+     "%%!我一直都想问这个↑\n"+
+     "“这个问题，主上还是不要深究为好。”\n" +
+     "%%!总是说一些难懂的话来搪塞我。\n"+
+     "说完这句话，我就走出了房间。\n" +
+     "%%!最没用礼貌的一次！\n"+
+     "被说中了。\n" +
+     "%%!看吧？\n"+
+     "原本我以为，自己藏得很好，所有人都不会感受到异样，只要挨过这段时间，让情感逐日变淡就好。只要这样的话……和主人分别的时候，就不会摆出一张难看的脸了吧。\n" +
+     "%%!老年人经历不起这么多的离别了，理解。但马脚还是太多了。你不会还不知道我能从后台看到你的博客吧？我以为你是看到到了但故意没回复的……\n"+
+     "难道说，我是在嫉妒长谷部君吗？\n" +
+     "%%!刚发现吗！而是仅仅只是长谷部吗？你连狐之助的醋都要吃。\n"+
+     "……这一次，就连老爷爷我也无法坦然处之了。\n" +
+     "\n" +
+     "\n" +
+     "下了场很夸张的雨，大概明天也不会停" },
+
+    { id: "令和八年六月二十二日", category: "日志", body: "[数据缺失]\n" +
+     "%%!不会的。这一点也不愚蠢或幼稚，这是你对此珍重的体现。\n"+
+     "[数据缺失]\n" +
+     "%%!我会在本丸为你加油的。\n"+
+     "[数据缺失]\n" +
+     "%%!如果能把一些真品古钱币带回本丸的话，本丸的经济状况就能又能……只是在开玩笑，往大了说，做这种事是有干预历史嫌疑的。\n"+
+     "[数据缺失]\n" +
+     "%%!哪怕只是分别三天，我也很不舍呢。\n"+
+     "[数据缺失]\n" +
+     "%%!今天晚上，让厨房做点你爱吃的小菜吧。\n"+
+     "[数据缺失]\n" +
+     "\n" +
+     "\n" +
+     "%%!明天是个出远门的好时机呢↓是个很好的兆头，会很顺利的\n"+
+     "天气晴，夜间能见度很高\n" +
+     "%%!这个提示很生硬↓\n"+
+     "{{ red |要抬头看看白月哦？}}\n" +
+     "——2026.7.23已编辑——" },
+
+    { id: "base-64", category: "词条", body: "似乎成功破译了游戏里的提示。根据网上的资料，base-64似乎是一种编码形式。\n" +
+     "这下，只要把几天前发现的那串乱码粘贴到网上随便哪个base-64解码的工具网站上，再按下解码键，就能清楚地看出其中的信息了。\n" +
+     "啊……刚发现，好像自己误把这道乱码又编译了一次，难怪显示出来的还只是字母和数字。\n" +
+     "\n" +
+     "\n" +
+     "令和八年六月二十八日" },
+
+    { id: "白月", category: "词条", body: "5oiR5oOz77yM6L+Z5bCx5bey57uP5piv5oiR55qE5p6B6ZmQ5LqG5ZCn44CCCuWuoeelnuiAheaYr+S4quW+iOWlveeahOWtqeWtkOOAggrkvYblpKrlrrnmmJPooqvlpJbnlYzkvrXlrrPjgIIK6ZSL5Yip55qE5YiA5YiD44CB5Yir5pyJ55So5b+D55qE5YW25LuW5YiA5YmR55S35aOr44CB54yb54OI55qE5aSn5pq06Zuo44CB5o2i5a2j55qE6Iqx57KJ6YO95Zyo5LyB5Zu+5oKE5oKE5o2f6ICX5aW555qE55Sf5ZG977yM54G15Yqb77yM5a+/5ZG944CCCui/mOacieaXtumXtOOAggrmiJHmnInlvojlpJrml7bpl7TjgIIK5oiR5Lus6L+Y5Lya5pyJ5b6I5aSa5pe26Ze044CCCgrku6TlkozlhavlubTkuIPmnIjkuozljYHkuInml6U= \n"+ 
+       "%%!不错，刚学的知识就活用起来了。"},
+
+   { id: "令和八年六月二十八日", category: "日志", body: "前几天进行了极化修行，回来后又休整了几天，没能找到空闲打字。今日花了不少功夫，总算重拾起进度，把游戏里的谜题解出了个大概……啊，去吃些点心休息一下吧。\n" +
+     "%%!还好吗？一直想这么说，但你似乎很少出门，根本找不到机会问你。\n"+
+     "本来是想这么说的，不过游戏的后续剧情似乎将整个事件带入了一个更为扑朔迷离的局面中，令人不由得好奇起接下来的发展了。\n" +
+     "%%!说明至少解谜系统做得不错吧？\n"+
+     "嗯嗯……故事的主角是一位广受喜爱的少女，追求者众多，但其中只有一个男性对她的感情到了痴迷的地步。\n" +
+     "这个青年男性本身并非庸碌之辈，也曾被许多人夸赞外在的皮囊。但在少女身边，他只觉得自己正在黯然失色。\n" +
+     "为了从无数竞争者手中得到少女，他不惜献祭自己，变成令人憎恶的恶鬼。\n" +
+     "恶鬼坚信，只要少女在它的身边，自己就能获得幸福。就算一开始毫无感情，但在漫长的相处中，二人一定可以创造出独一无二的美好回忆。恶鬼没有意识到：就算杀死了其他所有人，就算世界上只剩下它和她两人，情感也并非可以随意把玩和扭曲的物品。\n" +
+     "谜题来源于某个坏结局里，从少女的尸体上解锁的道具。破译出的结果是……她未曾寄出的信件。\n" +
+     "信中，少女倾诉了对某人思念。\n" +
+     "那个人是……尚未变成恶鬼的青年。\n" +
+     "%%!……………………话里有话呢。如果有什么想聊的，晚上来找我吧。一直都在房间。\n"+
+     "……\n" +
+     "\n" +
+     "\n" +
+     "%%!好像你还不知道这是我写的^^\n"+
+     "有点无聊呢，这个故事" },
+
+    { id: "令和八年七月二十三日", category: "日志", body: "时隔将近一个月才又开始在这里记录。嘛嘛，老年人偶尔也会睡个懒觉……\n" +
+     "%%!好懒散！\n"+
+     "今天就补上一些比较基础的词条好了。灵感……就从前几期的日志和词条里找找看吧。\n" +
+     "话虽如此，除了“天下五剑”之外，又能写些什么呢？嘛，我就是个喜欢感伤过去的老头子啊。\n" +
+     "%%!但还是一连写了好几篇呢\n"+
+     "主人最近还会和其他刀剑打闹，但又总会不时向我的方向看去。\n" +
+     "%%!发现了吗？为什么不过来一起玩呢？\n"+
+     "眼底还带着没能消去的笑意。是在试图挑衅吗？明明很了解我本性，却还是做出了这种事吗？啊……这就是我的主人啊。\n" +
+     "%%!这句话的m程度堪比龟甲……↑\n"+
+     "{{red|还是说，她已经知道我“极化”失败的事情了？}}\n" +
+     "%%!没关系的，大家都不会责备你的。我也不会。无法放下某件事并不能等同于整个刃生的失败。你在面对自己看重的事情时，就会露出相当失态的样子呢。\n"+
+     "\n" +
+     "\n" +
+     "没什么特别的" },
+
+    { id: "天下五剑", category: "词条", body: "“天下五剑”是日本传说中的五把名刀的总称。也就是说，是全日本最有名的五把刀。\n" +
+     "\n"+
+     "而在这之中，最美丽的当属……我？哈哈，这也是必然的嘛。刀纹的形状，本就是人类赏玩的对象、评判美丑的标准之一。\n"+
+     "%%!无论如何，你都是我眼中最美的那个（逃番另说）\n"+
+     "世人为何要以刃上的伤痕为美呢？\n"+
+     "%%!那是勇气的勋章啊。并不是伤痕本身很美，而是战胜了那些严酷考验的你很美。\n"+
+     "啊啊，就算已经是老爷爷了，受伤后残留的痛感也不会因淡忘而消散吗。\n" +
+     "%%!幻痛吗？我去找药研问问。\n"+
+     "似乎许多人都认为天下五剑与鬼神传说有关，那些丰富了刀剑逸闻的鬼怪如今还在何方呢？\n"+
+     "%%!在担心吗？内疚吗？自责吗？没关系的，所有物体和非物体都在以各自的方式影响世界，他们在你的心中留下了痕迹，而你接近于永恒。他们就因此也成就了永恒。我也是。\n"+
+     "大概都已经成为亡魂了吧？啊，妖怪和鬼本身也并非生灵吧，哈哈……就是如此啊。\n"+
+     "只有那个人才会为我的伤痕流下眼泪吧。\n"+
+     "%%!在拉踩吗↑说得是谁？\n"+
+     "\n"+
+     "\n"+
+     "令和八年七月二十三日" },
+
+    { id: "极化", category: "词条", body: "在能力积累到一定水准后，刀剑男士会收拾好衣装，从本丸离开，踏上属于自己的修行之路。\n" +
+     "为了获得更强的力量，他们必须与自己曾经的执念、恐惧、欲求抗争，极化之旅的长短也因人而异。好在本丸经过了特殊的术式改造，等到刀剑男士们返回时，本丸也只过去了三天而已。\n" +
+     "\n" +
+     "我，没能完成极化。\n" +
+     "%%!没关系。没关系。没关系。我想要找到让你不那么自责的方法，但你总是关上心门，把我们拒之门外。这个本丸的月亮已经很久没有升起过了。\n"+
+     "我一直在想，主人是否已经发现了我的异常呢？我不敢深思。没想到一把年纪，还在为这种琐事烦恼。\n" +
+     "%%!嗯，我一直都知道哦。\n"+
+     "在极化的旅途里，我又一次历经了千年，但那终归只是幻象，对吗？因为那时幻觉，所以才能自我安慰，说不定某天之后就可以回到本丸……回到主人身边，我是抱着这样的想法挨过漫长的岁月的。\n" +
+     "在一千年之后，我就不再做幼稚的年代计量了，毕竟那种事毫无意义，只能让我更清楚地认识到：如果主上和我同行，现在早就成为一具枯骨了吧。在时间都无意义的时候，真实反而成为了一种幻觉。我还能回想起那时心中止不住的颤抖……\n" +
+     "如果主人、本丸、还有所有遇到的人和事都从未存在过呢？如果那只是我漫长生命中的一场梦呢？如果现在的我已经醒来了呢？\n" +
+     "%%!那么，把这些幻觉记在心里就好，如果这些梦中的境遇能缓解你真实的疲劳就更好了。\n"+
+     "真可笑啊，居然被极化的幻境折磨到如此境地，真是个恶趣味的地方。\n" +
+     "%%!直面自己的内心吧。\n"+
+     "其他刀剑男士可能会选择借此机会回到原主身边吧？但我……我并不想要去到任何人身边。主人。等到我走过千年的旅途，品尝过千年的羁绊之后，满脑子都是杂乱无章的思绪。\n"+
+     "我想要回到主人的身边，想要回到本丸，想要回到主人身边的本丸。\n" +
+     "%%!如果发现我是幻觉的话，尽早放手才好吧！虽然我基本可以向你肯定，我是真真实实的大活人呢。\n"+
+     "记不清历代所有者的事情，是在说谎啊。我要如何向您开口、诉说千年份的思念呢？这份沉甸甸的情感，简直要把这柄老刀压弯了。\n"+
+     "但在那之前，持久萦绕我心的，是对失去您的恐慌。主人。\n" +
+     "%%!你还记得我，不是吗？那你就离失去我很遥远。\n"+
+     "\n" +
+     "{{ red |这样的三日月，已经称不上美丽了吧？}}\n"+
+     "%%!你会说同一轮月亮有时美丽、有时丑陋吗？\n"+
+     "\n" +
+     "\n" +
+     "所以，您才会看向其他人吗？\n" +
+     "%%!我看得最多的是你啊。\n"+
+     "不，我无法接受这种事。\n" +
+     "%%!嗯↓\n"+
+     "请您……一直看着我吧。" },
+
+    { id: "神隐", category: "词条", body: "一种民俗传说。据说某些人会因为误入或其他奇遇而进入神明的居所，在那里，人能够体验到世间前所未有的幸福。\n" +
+     "代价则是，会失去与现实世界的联系。\n" +
+     "\n" +
+     "为什么那些人最后都会选择回归现实呢？在美好的乌托邦里永远地存在、尽情地享乐，难道就不如在真实的、凶险的、肮脏而处处充满不确定的现实中挣扎求生吗？\n" +
+     "%%!因为真实总好过虚假，经受痛苦总好过自我欺骗。这样的事，我还是从你身上学到的。\n"+
+     "……今天看不到月亮。\n" +
+     "%%!我们的月亮什么时候愿意出来呢↑\n"+
+     "\n" +
+     "\n" +
+     "%%!难道是提示词吗？我想了好久，查了今年的月相才发现究竟是哪天↓不过该说是粗心大意吗，你用的是中国时区的月相图。\n"+
+     "八月份……虽然立秋刚过，但果然还是很热。" },
+
+    { id: "压切长谷部", category: "词条", body: "刀剑“压切长谷部”是日本传说中的名刀之一，被称为黑田家的重宝，但这个词条记录的是与刀同名的付丧神。特征为灰褐色短发、紫眼、身穿神父服。\n" +
+     "“无论何事，都请吩咐我压切长谷部！”——压切长谷部\n" +
+     "%%!哈！你在用这句话对他冷嘲热讽吗？不过我心地善良，暂时先不挑起你们两个之间的纷争了。\n"+
+     "\n" +
+     "嘛，我个人对任何刀剑都怀有敬意，就连长谷部君也不例外。不过，他的存在有时还是会有些碍事，不是吗？\n" +
+     "%%!碍事的话，为什么你不自己过来呢？\n"+
+     "主人似乎相当喜爱这类明目张胆的偏爱呢。\n"+
+     "%%!你也很喜欢吧？\n"+
+     "这种事情，来找我也可以吧？\n"+
+     "%%!在许愿吗？\n"+
+     "\n" +
+     "\n" +
+     "令和八年八月十二日" },
+
+    { id: "令和八年八月十二日", category: "日志", body: "最近似乎又疏于记录了。\n" +
+     "真是的，明明不认真记下来这些事是不行的。那件事的准备工作已经基本完成了，虽然经历了几次远征，但进度并没有因此受到干扰。“长谷部君，以及其他所有碍事的人，都已经不会再干扰我和那个人的事情了”我是靠着这样的信念才能持续到现在的。\n" +
+     "%%!最近不仅表情不对，行动也越来越奇怪了。\n"+
+     "什么时候执行那个计划呢？\n" +
+     "%%!惊喜吗？是什么呢？\n"+
+     "……下个月，有个和月亮有关的日子呢。\n" +
+     "%%!我就大发慈悲地好好期待一下吧！\n"+
+     "%%!怎么是这种惊喜啊！！↑\n"+
+     "\n" +
+     "\n" +
+     "%%!一点也不是……↓\n"+
+     "是很不错的想法吧？" },
+
+    { id: "令和八年九月二十四日", category: "日志", body: "就是明天了啊。\n" +
+     "%%!你也在期待着啊。\n"+
+     "不知道为什么，在终于决定要这样做之后，反而会觉得相当平静。应该说这就是佛家的“解脱”吗？不。都到这一步了，已经可以说是“罪孽深重”了吧。我不会奢求解脱了。\n" +
+     "%%!有这么严重吗？到底是什么事呢？以及，就那个词条的发布时间来看……不会是……？\n"+
+     "今天是我做近侍，久违的和主人说了些话。\n" +
+     "“心情很好吗？”主人这样问。\n" +
+     "“嗯，”我说，“有件魂牵梦萦的事情，终于能达成所愿了。”\n" +
+     "“是吗？恭喜，”主人一无所知地微笑着，说道，“几个月以来，看见你的心情这么好的样子，真是头一回。”\n" +
+     "%%!其实，已经差不多察觉到了。\n"+
+     "“哦呀？明明老爷爷我每天都是这副样子来着。”心中涌起一股无由来的烦躁。\n" +
+     "%%!那时候的笑容很勉强呢。\n"+
+     "“不是吧。三日月这段日子里，总是在强颜欢笑。以为我没看出来吗？”主人吹了吹茶盏，杯中淡绿色的波纹层层叠叠。\n" +
+     "“那么，主人以为，我在为什么发愁呢？”我慢慢抬起头，盯着她的眼睛，一字一句说。\n" +
+     "“……”没有回答。是吗？这就是答案了。我准备就此告退，刚低下头，就听见她开口道：\n" +
+     "“因为，三日月是个怕寂寞的人呢。”\n" +
+     "%%!是实话吧↑\n"+
+     "逃跑吧。\n" +
+     "\n" +
+     "\n" +
+     "%%!怎么了？↓\n"+
+     "{{shake|不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可以动摇不可}}" },
+
+    { id: "令和八年九月二十五日", category: "日志", body: "昨天的事只是插曲。没什么好担心的。\n" +
+     "事情的进展异常的顺利，因为过程太快，甚至没人来得及阻拦。\n" +
+     "%%!才看到这一天的日志，真是相当感慨啊。我原以为你不会真的下决心这么做的。\n"+
+     "……成功了吗？我试着消除了本丸的时空坐标，以此处作为新的神域。其他刀剑男士怎么样了？不是很关心这个呢。\n" +
+     "%%!嘴上这么说，但还是把所有人挪到波及范围之外才发动的术式啊。\n"+
+     "不知道为什么，这个网站还能正常使用。主人并没有过于惊讶，是被吓到说不出话了吗？难以置信吗？\n" +
+     "%%!之前收到了犯罪预告呢。\n"+
+     "……\n" +
+     "樱花开了呢。\n" +
+     "主人说，神隐领域里的环境是和主宰者的情绪密切相关的。真的有那么开心吗？呵呵。不好，察觉到的时候已经不自觉地笑了出来。\n" +
+     "%%!小人得志的嘴脸↑\n"+
+     "接下来的所有时间，都由我和主人共享了。日志的名字也还是修改一下为好。要叫什么呢？“月之暗面”？“永恒的第一秒”？\n" +
+     "%%!从“日志说明”那里回来了，居然真的有不按原格式写的日志啊，我是调取后台记录才发现的。\n"+
+     "\n" +
+     "\n" +
+     "%%!身体一如既往地诚实呢↓\n"+
+     "主人在呼唤我，啊啊，已经是这个时候了，得赶快过去才行" },
+
+    { id: "月之暗面", category: "词条", body: "就算是月亮，也有从地球上完全看不到的位置吧？当太阳的光芒散布到宇宙中来之时，月亮的阴影也在同步滋长着。\n" +
+     "好像有个很出名的英文歌专辑也叫这个呢。\n" +
+     "%%!很有名的，一定要听听看。\n"+
+     "曾经抱着好奇的心态听了一下，不过很快就被吵得关掉了。\n" +
+     "%%!老年人果然还是对摇滚接受不能吗？\n"+
+     "看到月亮阴暗面的人们，大概都会被吓到吧。虽然并不担心主人不会接受我（毕竟，现在的世界上只剩下我和她两个人了），但是，果然还是不想让她受到惊吓。\n" +
+     "%%!这是哪个月亮的暗面呢？\n"+
+     "\n" +
+     "\n" +
+     "%%!在回味吗！\n"+
+     "主人的肌肤，很柔软" },
+
+    { id: "永恒的第一秒", category: "日志", body: "主人向我讲了一个故事：\n" +
+     "一个国王问牧童说：“永恒有多少秒？”\n" +
+     "牧童回答说：“从前，在遥远的东方，有一座钻石山。这座山有一千米长，一千米高，一千米深，飞到山顶需要三个小时，绕过山也需要三个小时，每一百年会有一只乌鸦飞到山上，在钻石上磨一磨自己的爪子，磨一磨自己的喙。”\n" +
+     "“等到这座山被磨平，永恒的第一秒才刚刚结束。”\n" +
+     "%%!我一直都很喜欢安徒生的童话故事。成年人也可以从中汲取力量。\n"+
+     "\n" +
+     "\n" +
+     "很不错的故事，不是吗？明天的故事应当会更有趣吧？\n" +
+     "%%!写完一整篇了，还在回味吗！↓\n"+
+     "主人的嘴唇也很柔软" },
+
+    { id: "永恒的第二秒", category: "日志", body: "下雪了。\n" +
+     "因为主人想看雪，所以做出了雪景。\n" +
+     "%%!好奢侈的灵力使用方法。\n"+
+     "“灵力难道是这么方便的东西吗？”主人用手掌接住，晶莹洁白的雪片很快就化为一小摊水珠。那时一滴微不可察的液体，甚至无法打湿手心之外的地方。\n" +
+     "我用已经搓得很热的双手，敷上主人略有些冰凉的手指。\n" +
+     "%%!skinship吗？不错不错\n"+
+     "“呵呵……毕竟是个小范围的神域，只是从您的身上窃取来一小部分灵力都足以维持运转。至于这个，充其量只能算是个不入流的小戏法呢。”\n" +
+     "我这样说着，又凝神片刻，再松开手时，主人的手中赫然多出了一小樽雪做的塑像。\n" +
+     "“这个样子，用干花瓣装点的半边鬓发，还有笑起来的角度，”主人含着笑，“都很像三日月呢。”\n" +
+     "%%!其实是瞎说的↑\n"+
+     "“嘛……只是老头子用来讨心爱之人欢心的戏法而已。您可还喜欢？”刻意用了不太适当的词语。\n" +
+     "%%!三日月很少说情话呢。\n"+
+     "“把你捧在手上吗？还挺不错的。”\n" +
+     "我有点哑口无言。这副表情，不应该出现在老爷爷的脸上吧？主人已经轻轻地笑起来了。\n" +
+     "%%!终于看到你脸红的样子了。\n"+
+     "\n" +
+     "\n" +
+     "%%!那就不要勉强自己啊！明明都是这个时候了↓\n"+
+     "站在雪里的时间太久了，对关节还是不太妙啊" },
+
+    { id: "永恒的第三秒", category: "日志", body: "主人提到床第之事时，神情语言中并无太多抗拒的意思。\n" +
+     "%%!嗯嗯，就当活动活动关节也不错吧\n"+
+     "虽然已经尽力忍到了现在，但既然主君有所欲求，臣下没有不满足的道理。今天，就先在有许多萤火虫出没的山坡上漫步吧。\n" +
+     "%%!你一直都是这么纯情的人吗？\n"+
+     "要从skinship开始，循序渐进才算是良好关系的基石吧？这样想着，策划了一条晚饭后散步的路线。\n" +
+     "%%!还以为你想要野……野〇…………\n"+
+     "……但是，却被主人抢先袭击了。\n" +
+     "%%!主动一点也没什么不好吧！\n"+
+     "“抱住我，三日月。”主人这样说着的时候，我只能呆呆盯着她梳起头发的洁白脖颈，呼吸身下馨香的空气。除此之外，什么也做不到。\n" +
+     "%%!不要偷偷闻我的气味！\n"+
+     "“身上有股草药的臭味。”她撇撇嘴，松开手。\n" +
+     "啊啊，早知道会遭遇这种事，就不应该在身上贴满膏药的。\n" +
+     "%%!原来是膏药啊。果然是老爷爷了。\n"+
+     "\n" +
+     "\n" +
+     "%%!很遗憾吗？\n"+
+     "那天晚上，还是没能做到那一步" },
+
+    { id: "永恒的第四秒", category: "日志", body: "我无法相信，主人竟然在被神隐之后从未动过离开这里的念头。不要说平日里乱发脾气了，思念外界的话更是一次都没有说过。\n" +
+     "嘛……如果说一开始没有窃喜过是在说谎，只是越想越会觉得奇怪吧？难道说主人已经找到联系时之政府的渠道了吗？\n" +
+     "%%!其实……联系上他们…………并不难……………………\n"+
+     "只有这一种解释了吧？\n" +
+     "%%!为什么不是我自愿留下来呢？\n"+
+     "啊……都已经到这个时候了。先去准备下午茶吧。\n" +
+     "%%!羊羹的味道好吃到不像是你做出来的。\n"+
+     "\n" +
+     "\n" +
+     "然后，这天晚上就被袭击了。\n" +
+     "%%!我来弥补上一次的遗憾了，不满意吗？\n"+
+     "日志补于次日。\n" +
+     "%%!果然还是那个精力不足的老年人啊……\n"+
+     "%%!有这么夸张吗？↓\n"+
+     "腰还在隐隐作痛。" },
+
+    { id: "时之政府", category: "词条", body: "为了维护历史、让历史不被扭曲而诞生的机构，审神者们的上级单位。\n" +
+     "现在已经和我、和主人无关了。\n" +
+     "%%!已经，永远地休假了。\n"+
+     "\n" +
+     "失去工作的必要后，主人除了和我待在一起，就是闷头在房内玩任〇堂的游戏，一连过了好几日也是如此，但今天却反常地打开了笔记本。\n" +
+     "%%!上线看看你都写了些什么。\n"+
+     "在寻找和时政联络的方式吗？我应该把网络都掐断了才对……\n" +
+     "%%!啧。\n"+
+     "\n" +
+     "\n" +
+     "%%!此时此刻就是无时无刻。\n"+
+     "在时间停止流动的永恒里，此时此刻，究竟算是什么时候呢？" },
+
+    { id: "永恒的第五秒", category: "日志", body: "主上罕见地想要饮酒。\n" +
+     "%%!有点馋这个了……\n"+
+     "是忧思过度，想要以酒解忧吗？终于厌烦了？想要寻找解脱了？\n" +
+     "%%!都不是呢。\n"+
+     "“是为了和你促膝长谈啊。我们很久没有面对面在月下对酌了吧？”主人这么说道，仰头饮下一小盏清酒，酒杯里还浮着一片樱花的花瓣。\n" +
+     "“您……不害怕我吗？”我斟酌了几秒，最终还是把话说出了口。\n" +
+     "“你不是三日月宗近吗？”主人把小酒杯扣在桌上。\n" +
+     "“在我做过如此不可饶恕的事情之后……在我没能完成极化之后……您还认为我是那把华美的名刀吗？”\n" +
+     "%%!难道不是吗？\n"+
+     "“蝴蝶会不认可还是毛虫时的自己吗？”有风吹过。\n" +
+     "“对着神隐了您的元凶，还要照顾和宽慰吗？真是温柔又任性的主人啊。”这个时候，除了调侃的话语，什么也想不到了。为了维持最后的一点尊严，只能作出半悲半笑的表情。\n" +
+     "%%!忍了很久才没有立刻笑出来。\n"+
+     "“这个神域就是你的‘茧’，”主人的眼中倒映着我的身影，“如果觉得外面的世界太过残忍的话，一辈子待在里面也是可以的。”\n" +
+     "%%!并不是假话。\n"+
+     "这就是您的看法吗？啊啊。\n" +
+     "\n" +
+     "\n" +
+     "%%!果然偷偷哭过了↓\n"+
+     "借着喝酒时仰头的瞬间，用衣袖擦干了眼角还未掉落的盐水" },
+
+    { id: "永恒的第六秒", category: "日志", body: "主人已经开始淡忘神隐前的旧事了，尽管容貌并未改变，行动时却总是懒懒的，最近花在睡眠上的时间也变得更少了。\n" +
+     "%%!没有需要劳累的工作，自然睡得就会少很多了啊！以及健忘怎么你了！\n"+
+     "果然，神域这种地方，对人类之躯还是负担过重了些。如果想要离开的话，明明撤回向我供给的灵力就好。不仅神域会立刻崩解，我也会……在瞬间消散吧。\n" +
+     "%%!所以并不想这么做呢。\n"+
+     "毕竟，我是因为主人才存在于世的产物。如今的我已不再是为了维护历史而存在的付丧神，她也不再是为了时政和本丸里的众人才留在这里的审神者。\n" +
+     "%%!嗯。现在，只有我和你了。\n"+
+     "嗯，我才是那个离开对方就无法存活的人啊。哈哈，居然现在才发现这种事，该不该说呢，果然还是个迟钝的老爷爷吧？\n" +
+     "%%!没关系的，那就尽情依赖我吧。\n"+
+     "\n" +
+     "\n" +
+     "这种无趣的记录，也是时候该停止了" },
+
+    { id: "近侍", category: "词条", body: "本义是指贴身侍奉的仆人。在时政下属的本丸里，近侍特指那个负责照顾主人的日常生活，处理各种事务的刀剑男士。\n" +
+     "近侍由审神者指定，是否轮换近侍和轮换频次、顺序都由审神者一人决定。\n" +
+     "\n" +
+     "现在的我，是主人唯一的刀、唯一的近侍呢。\n" +
+     "%%!明明现在已经不再有本丸了。你的身份就是我最独一无二的三日月宗近。除此之外并无其他。\n"+
+     "\n" +
+     "\n" +
+     "%%!我就知道……↓\n"+
+     "不过，下午茶时吃掉的羊羹是偷偷从万屋拿到的，这种事可不能让主人知道" },
+
+    { id: "永恒的第七秒", category: "日志", body: "今天的三日月似乎不是很精神，整个人也蔫蔫的。\n" +
+     "这个老爷爷似乎还没有察觉到，既然我就是网站的搭建者，当然也会给自己在程序上留下后门这种几乎等同于人之常情的事。\n" +
+     "嗯，对，就是你想的那样，我从头到尾都有好好看过了哦？\n" +
+     "%%!在发现批注之后，有没有重新回看每一篇内容呢？\n"+
+     "不过，居然敢说我健忘……可恶……\n" +
+     "%%!居然敢说我健忘……可恶……\n"+
+     "\n" +
+     "\n" +
+     "%%!还没有猜到吗？月亮。\n"+
+     "%%!主人以为，我一直都不知道吗？↑\n"+
+     "不要怪我嘛！明明一开始我就在那个标题下，把一切全都告诉你了！还没有猜出来吗？就是那个标题，你一直一直在看的那个" },
+
+    { id: "早上好，太阳", category: "日志", body: "已经到了不得不离开的时候了。\n" +
+     "这个网站，会被谁看到呢？\n" +
+     "最后的那天，我记得似乎是中秋。\n" +
+     "为了迎接这个节日，烛台切和歌仙前一天在厨房里压制了不少月饼。小短刀们想要提前尝尝滋味，可惜厨房早就被长谷部先行落了锁。\n" +
+     "和代表新生与残缺的新月不同，圆圆的明月就是和谐、圆满的象征。\n" +
+     "对于世间的人们来说，那天应当是个是个团圆、快乐的日子。\n" +
+     "\n" +
+     "别了，所有的一切。\n" +
+     "\n" +
+     "\n" +
+     "审神者和三日月宗近 敬上" },
+  ];
+
+  var MUSIC_LIST = [
+    { id: "silent",  name: "静音",       type: "silent" },
+    { id: "bgm1", name: "今晩はお月さん", type: "audio", src: "audio/今晩はお月さん.mp3" },
+    { id: "local",   name: "从本地导入…", type: "local" }
+  ];
+
+  var ABOUT_TEXT =
+    "在你打开这个网站时，一个弹窗不知从何处蹦了出来。\n" +
+    "不知道是由于时空扭曲，还是别的什么因素影响，这个弹窗页面的内容令完全你摸不着头脑：\n" +
+    "\n" +
+    "【制作人名单及声明】\n" +
+    "文本撰写：97（xhs@锫的第八个电子）\n" +
+    "网站建造：97（xhs@锫的第八个电子）\n" +
+    "\n" +
+    "音频：\n"+
+    "ORIGINAL:今晩はお月さん—ハンバート ハンバート\n"+
+    "MIDI:夏城罪（xhs@罪魁祸狗）\n"+
+    "MIX:夏城罪（xhs@罪魁祸狗）\n"+    
+    "VOCAL:三日月宗近\n" +
+    "网易云播客id：赐予污秽的逆位之星崇高荣光\n" +
+    "\n" +
+    "\n" +
+    "灵感来源：《type-help》\n"+
+    "by:William Rous\n" +
+    "网址：https://william-rous.itch.io/type-help \n" +
+    "\n" +
+    "【本网站为《刀剑乱舞Online》的三日月审同人向交互推理游戏】\n" +
+    "【一切内容仅为剧情效果，所有信息纯素虚构】\n" +
+    "【禁止未经允许的二次更改、传播、贩售】\n" +
+    "【本游戏完全免费，请勿用于任何商业用途】";
+
+  var STORAGE_KEY         = "mikazuki_archive_unlocked_v1";
+  var STORAGE_KEY_READ    = "mikazuki_archive_read_v1";
+  var STORAGE_KEY_VISITED = "mikazuki_visited_v1";
+  var STORAGE_KEY_CURRENT = "mikazuki_current_id_v1";
+  var STORAGE_KEY_ACH     = "mikazuki_ach_v1";
+  var STORAGE_KEY_SOUND   = "mikazuki_sound_enabled_v1";
+
+  var MOON_SCALES = [0.55, 0.68, 0.80, 0.91, 1.00, 0.91, 0.80, 0.68, 0.55];
+
+  var PHASE_OFFSETS = [
+     0, -20, -40, -60, -80, 60, 40, 20, 0
+  ];
+
+  var MIKAZUKI_OFFSET = -24;
+
+  var moonUid = 0;
+
+  function buildMoonSVG(size, offset) {
+    moonUid++;
+    var maskId = "moonMask" + moonUid;
+    var r = 40;
+
+    var svg = '<svg class="moon-icon" width="' + size + '" height="' + size + '" '
+            + 'viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">';
+
+    svg += '<defs><mask id="' + maskId + '">'
+         +   '<rect x="-50" y="-50" width="100" height="100" fill="black"/>'
+         +   '<circle cx="0" cy="0" r="' + r + '" fill="white"/>'
+         +   '<circle cx="' + offset + '" cy="0" r="' + r + '" fill="black"/>'
+         + '</mask></defs>';
+
+    svg += '<circle cx="0" cy="0" r="' + r + '" fill="#f4e3a1" '
+         + 'mask="url(#' + maskId + ')"/>';
+
+    if (offset === 0) {
+      svg += '<circle cx="0" cy="0" r="' + r + '" fill="none" '
+           + 'stroke="rgba(244,227,161,0.30)" stroke-width="2"/>';
+    }
+
+    svg += '</svg>';
+    return svg;
+  }
+
+  function renderHeaderMoons() {
+    var moonInner = document.getElementById("moonInner");
+    if (!moonInner) { return; }
+
+    var W = moonInner.clientWidth;
+    if (W <= 0) { return; }
+
+    var gap = Math.max(3, Math.min(16, W * 0.014));
+
+    var sumScales = 0;
+    for (var i = 0; i < MOON_SCALES.length; i++) {
+      sumScales += MOON_SCALES[i];
+    }
+
+    var base = (W - gap * (MOON_SCALES.length - 1)) / sumScales;
+    if (base <= 0) { return; }
+
+    var phaseRow = document.getElementById("moonPhaseRow");
+    var mikaRow  = document.getElementById("moonMikazukiRow");
+
+    if (phaseRow) { phaseRow.style.gap = gap + "px"; }
+    if (mikaRow)  { mikaRow.style.gap  = gap + "px"; }
+
+    if (phaseRow) {
+      var buf1 = "";
+      for (var pi = 0; pi < PHASE_OFFSETS.length; pi++) {
+        var s1 = Math.round(base * MOON_SCALES[pi]);
+        buf1 += buildMoonSVG(s1, PHASE_OFFSETS[pi]);
+      }
+      phaseRow.innerHTML = buf1;
+    }
+
+    if (mikaRow) {
+      var buf2 = "";
+      for (var mi = 0; mi < MOON_SCALES.length; mi++) {
+        var s2 = Math.round(base * MOON_SCALES[mi]);
+        buf2 += buildMoonSVG(s2, MIKAZUKI_OFFSET);
+      }
+      mikaRow.innerHTML = buf2;
+    }
+  }
+
+  function scheduleMoonRender() {
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(renderHeaderMoons);
+    });
+  }
+
+  scheduleMoonRender();
+
+  function loadIds(key) {
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem(key) || "null"); }
+    catch (e) { saved = null; }
+    return Array.isArray(saved) ? saved : null;
+  }
+
+  function saveIds(key, arr) {
+    try { localStorage.setItem(key, JSON.stringify(arr)); } catch (e) {}
+  }
+
+  function loadUnlocked() {
+    var saved = loadIds(STORAGE_KEY);
+    if (saved && saved.length > 0) {
+      return saved.filter(function (id) {
+        var item = null;
+        for (var i = 0; i < ARCHIVES.length; i++) {
+          if (ARCHIVES[i].id === id) { item = ARCHIVES[i]; break; }
+        }
+        if (!item) { return false; }
+        if (item.requires && saved.indexOf(item.requires) === -1) { return false; }
+        return true;
+      });
+    }
+    return ARCHIVES.length > 0 ? [ARCHIVES[0].id] : [];
+  }
+
+  function loadRead() {
+    var saved = loadIds(STORAGE_KEY_READ);
+    if (!saved) { return []; }
+    return saved.filter(function (id) {
+      return ARCHIVES.some(function (a) { return a.id === id; });
+    });
+  }
+
+  var unlockedIds = loadUnlocked();
+  var readIds     = loadRead();
+  var collapsedCategories = {};
+
+  var inputEl       = document.getElementById("searchInput");
+  var clearEl       = document.getElementById("clearBtn");
+  var logoutEl      = document.getElementById("logoutBtn");
+  var newDocEl      = document.getElementById("newDocBtn");
+  var aboutEl       = document.getElementById("aboutBtn");
+  var floatWrapEl   = document.getElementById("floatingButtons");
+
+  var mobileTopbarEl = document.getElementById("mobileTopbar");
+  var mobileMenuEl   = document.getElementById("mobileMenuBtn");
+  var mobileHomeEl   = document.getElementById("mobileHomeBtn");
+  var mobileSidebarCloseEl = document.getElementById("mobileSidebarClose");
+  var mobileSidebarBackdropEl = document.getElementById("mobileSidebarBackdrop");
+
+  var listEl        = document.getElementById("archiveList");
+  var countEl       = document.getElementById("count");
+
+  var docViewEl     = document.getElementById("docView");
+  var docEditorEl   = document.getElementById("docEditor");
+  var docIdEl       = document.getElementById("docId");
+  var docBodyEl     = document.getElementById("docBody");
+  var docCardEl     = document.getElementById("docCard");
+  var docReturnEl   = document.getElementById("docReturnBtn");
+
+  var panelDocEl    = document.getElementById("panel-doc");
+  var docTabBtnEl   = document.getElementById("docTabBtn");
+  var leftColumnEl  = document.querySelector(".left-column");
+
+  var newTitleEl    = document.getElementById("newDocTitleInput");
+  var newBodyEl     = document.getElementById("newDocBodyInput");
+  var newCatEl      = document.getElementById("newDocCategorySelect");
+  var suggestionsEl = document.getElementById("titleSuggestions");
+
+  var tabsEl        = document.querySelectorAll(".tab");
+  var tabsBarEl     = document.getElementById("tabsBar");
+  var tabIndicator  = document.getElementById("tabIndicator");
+  var panelIndex    = document.getElementById("panel-index");
+  var panelMusic    = document.getElementById("panel-music");
+  var musicListEl   = document.getElementById("musicList");
+
+  var aboutMaskEl   = document.getElementById("aboutModalMask");
+  var aboutCloseEl  = document.getElementById("aboutModalClose");
+  var aboutBodyEl   = document.getElementById("aboutModalBody");
+
+  var achToastEl    = document.getElementById("achievementToast");
+  var achIconEl     = document.getElementById("achievementIcon");
+  var achTextEl     = document.getElementById("achievementText");
+  var achTimer      = null;
+
+  var soundToggleEl = document.getElementById("soundToggle");
+
+  var currentId   = "";
+  var justUnlockedId = "";
+
+  var indicatorUpdateTimer = null;
+
+  var docCardHome = {
+    parent: docCardEl.parentNode,
+    next: docCardEl.nextSibling
+  };
+
+  function normalize(str) {
+    return String(str || "").trim().replace(/\s+/g, "").toLowerCase();
+  }
+
+  function findArchive(id) {
+    for (var i = 0; i < ARCHIVES.length; i++) {
+      if (ARCHIVES[i].id === id) { return ARCHIVES[i]; }
+    }
+    return null;
+  }
+
+  /* ============================================================
+     成就系统
+     ============================================================ */
+  var MIKAZUKI_ACH_SVG =
+    '<svg viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs><mask id="mikazukiAchMask">' +
+        '<rect x="-50" y="-50" width="100" height="100" fill="black"/>' +
+        '<circle cx="0" cy="0" r="40" fill="white"/>' +
+        '<circle cx="-24" cy="0" r="40" fill="black"/>' +
+      '</mask></defs>' +
+      '<circle cx="0" cy="0" r="40" fill="#f4e3a1" mask="url(#mikazukiAchMask)"/>' +
+    '</svg>';
+
+  var FULL_MOON_ACH_SVG =
+    '<svg viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg">' +
+      '<circle cx="0" cy="0" r="40" fill="#f4e3a1"/>' +
+    '</svg>';
+
+  function showAchievement(text, iconSvg) {
+    if (!achToastEl) { return; }
+    achTextEl.textContent = text;
+    achIconEl.innerHTML = iconSvg || MIKAZUKI_ACH_SVG;
+    achToastEl.classList.add("show");
+    if (achTimer) { clearTimeout(achTimer); }
+    achTimer = setTimeout(function () {
+      achToastEl.classList.remove("show");
+      achTimer = null;
+    }, 2800);
+  }
+
+  function loadAch() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY_ACH) || "[]"); }
+    catch (e) { return []; }
+  }
+  function saveAch(arr) {
+    try { localStorage.setItem(STORAGE_KEY_ACH, JSON.stringify(arr)); } catch (e) {}
+  }
+
+  function checkProgressAchievements() {
+    var unlockedCount = ARCHIVES.filter(function (a) {
+      return unlockedIds.indexOf(a.id) !== -1;
+    }).length;
+    var total = ARCHIVES.length;
+    var ach = loadAch();
+
+    if (unlockedCount >= Math.ceil(total / 2) && ach.indexOf("half") === -1) {
+      ach.push("half");
+      saveAch(ach);
+      setTimeout(function () {
+        showAchievement("已解锁超半数文本", MIKAZUKI_ACH_SVG);
+      }, 1400);
+    }
+
+    if (unlockedCount >= total && ach.indexOf("all") === -1) {
+      ach.push("all");
+      saveAch(ach);
+      setTimeout(function () {
+        showAchievement("已解锁全部文本", MIKAZUKI_ACH_SVG);
+      }, 1400);
+    }
+  }
+
+  /* ============================================================
+     正文解析
+     ============================================================ */
+  function parseLine(line) {
+    var tokens = [];
+    var regex = /\{\{([^|{}]+)\|([^{}]+)\}\}/g;
+    var lastIndex = 0;
+    var match;
+
+    while ((match = regex.exec(line)) !== null) {
+      for (var i = lastIndex; i < match.index; i++) {
+        tokens.push({ ch: line.charAt(i), fx: [] });
+      }
+      var fxList = match[1].split(",").map(function (s) { return s.trim(); });
+      var content = match[2];
+      for (var j = 0; j < content.length; j++) {
+        tokens.push({ ch: content.charAt(j), fx: fxList });
+      }
+      lastIndex = regex.lastIndex;
+    }
+    for (var k = lastIndex; k < line.length; k++) {
+      tokens.push({ ch: line.charAt(k), fx: [] });
+    }
+    return tokens;
+  }
+
+  function renderBody(text, mode) {
+    if (mode !== "fade" && mode !== "typewriter") { mode = "none"; }
+
+    var lines = String(text).split("\n");
+    var frag = document.createDocumentFragment();
+    var allCharSpans = [];
+
+    lines.forEach(function (line) {
+      if (line.indexOf("%%!") === 0) {
+        if (unlockedIds.indexOf("永恒的第七秒") === -1) { return; }
+        var noteEl1 = document.createElement("div");
+        noteEl1.className = "doc-note";
+        noteEl1.textContent = line.slice(3).trim();
+        frag.appendChild(noteEl1);
+        return;
+      }
+
+      if (line.indexOf("%%") === 0) {
+        var noteEl2 = document.createElement("div");
+        noteEl2.className = "doc-note";
+        noteEl2.textContent = line.slice(2).trim();
+        frag.appendChild(noteEl2);
+        return;
+      }
+
+      var lineDiv = document.createElement("div");
+      lineDiv.className = "doc-line";
+
+      if (line === "") {
+        lineDiv.appendChild(document.createTextNode("\u00A0"));
+        frag.appendChild(lineDiv);
+        return;
+      }
+
+      var tokens = parseLine(line);
+
+      tokens.forEach(function (t) {
+        var outer = document.createElement("span");
+        if (mode === "typewriter") { outer.className = "char-type"; }
+        else if (mode === "fade")  { outer.className = "char-fade"; }
+        else                       { outer.className = "char-none"; }
+
+        var inner = document.createElement("span");
+        inner.textContent = t.ch;
+
+        for (var f = 0; f < t.fx.length; f++) {
+          var fxName = t.fx[f];
+          if (/^[a-z][a-z0-9-]*$/i.test(fxName)) {
+            inner.classList.add("fx-" + fxName);
+          }
+        }
+
+        outer.appendChild(inner);
+        lineDiv.appendChild(outer);
+        allCharSpans.push(outer);
+      });
+
+      frag.appendChild(lineDiv);
+    });
+
+    docBodyEl.classList.remove("is-empty");
+    docBodyEl.innerHTML = "";
+    docBodyEl.appendChild(frag);
+
+    if (allCharSpans.length === 0) { return; }
+
+    if (mode === "typewriter") {
+      var totalMs = Math.min(3800, Math.max(2400, allCharSpans.length * 22 + 2000));
+      var perChar = totalMs / allCharSpans.length;
+      var idx = 0;
+      var timer = setInterval(function () {
+        if (idx >= allCharSpans.length) { clearInterval(timer); return; }
+        allCharSpans[idx].classList.add("shown");
+        idx++;
+      }, perChar);
+    } else if (mode === "fade") {
+      var totalMs2 = Math.min(1800, Math.max(400, allCharSpans.length * 22));
+      var perChar2 = totalMs2 / allCharSpans.length;
+      allCharSpans.forEach(function (span, i) {
+        span.style.animationDelay = (i * perChar2).toFixed(1) + "ms";
+      });
+    }
+  }
+
+  function renderList() {
+    var unlockedArchives = ARCHIVES.filter(function (a) {
+      return unlockedIds.indexOf(a.id) !== -1;
+    });
+
+    countEl.textContent = unlockedArchives.length;
+    listEl.innerHTML = "";
+
+    if (unlockedArchives.length === 0) {
+      var emptyLi = document.createElement("li");
+      emptyLi.className = "empty";
+      emptyLi.textContent = "档案室空空如也。";
+      listEl.appendChild(emptyLi);
+      requestAnimationFrame(updateArchiveIndicator);
+      return;
+    }
+
+    CATEGORIES.forEach(function (cat) {
+      var items = unlockedArchives.filter(function (a) {
+        return a.category === cat;
+      });
+      if (items.length === 0) { return; }
+
+      var catLi = document.createElement("li");
+      catLi.className = "category";
+      if (collapsedCategories[cat]) { catLi.classList.add("collapsed"); }
+      catLi.setAttribute("data-category", cat);
+
+      var headerBtn = document.createElement("button");
+      headerBtn.type = "button";
+      headerBtn.className = "category-header";
+      headerBtn.setAttribute("aria-label", cat + " 分类");
+
+      var nameSpan = document.createElement("span");
+      nameSpan.className = "category-name";
+      nameSpan.textContent = cat;
+      headerBtn.appendChild(nameSpan);
+
+      var arrowSpan = document.createElement("span");
+      arrowSpan.className = "category-arrow";
+      arrowSpan.textContent = "›";
+      arrowSpan.setAttribute("aria-hidden", "true");
+      headerBtn.appendChild(arrowSpan);
+
+      headerBtn.addEventListener("click", function () {
+        collapsedCategories[cat] = !collapsedCategories[cat];
+        catLi.classList.toggle("collapsed", collapsedCategories[cat]);
+        updateArchiveIndicator();
+        if (indicatorUpdateTimer) { clearTimeout(indicatorUpdateTimer); }
+        indicatorUpdateTimer = setTimeout(updateArchiveIndicator, 420);
+      });
+
+      catLi.appendChild(headerBtn);
+
+      var bodyWrap = document.createElement("div");
+      bodyWrap.className = "category-body";
+
+      var itemsUl = document.createElement("ul");
+      itemsUl.className = "category-items";
+
+      items.forEach(function (item) {
+        var li  = document.createElement("li");
+        var btn = document.createElement("button");
+
+        btn.type = "button";
+        btn.className = "archive-item" + (item.id === currentId ? " active" : "");
+        btn.setAttribute("data-id", item.id);
+
+        if (item.id === justUnlockedId) { btn.classList.add("just-unlocked"); }
+
+        var titleSpan = document.createElement("span");
+        titleSpan.textContent = item.id;
+        btn.appendChild(titleSpan);
+
+        if (readIds.indexOf(item.id) === -1) {
+          var dot = document.createElement("span");
+          dot.className = "new-dot";
+          dot.setAttribute("aria-label", "未读");
+          btn.appendChild(dot);
+        }
+
+        btn.addEventListener("click", function () {
+          exitEditorMode();
+          openArchive(item.id);
+          if (window.innerWidth < 860) { switchPanel("doc"); }
+        });
+
+        li.appendChild(btn);
+        itemsUl.appendChild(li);
+      });
+
+      bodyWrap.appendChild(itemsUl);
+      catLi.appendChild(bodyWrap);
+      listEl.appendChild(catLi);
+    });
+
+    if (justUnlockedId) {
+      var flashId = justUnlockedId;
+      justUnlockedId = "";
+      setTimeout(function () {
+        var nodes = listEl.querySelectorAll(".archive-item.just-unlocked");
+        for (var n = 0; n < nodes.length; n++) {
+          if (nodes[n].getAttribute("data-id") === flashId) {
+            nodes[n].classList.remove("just-unlocked");
+          }
+        }
+      }, 1700);
+    }
+    requestAnimationFrame(updateArchiveIndicator);
+  }
+
+  function updateArchiveIndicator() {
+    var indicator = document.getElementById("archiveIndicator");
+    if (!indicator) { return; }
+
+    var activeItem = listEl.querySelector(".archive-item.active");
+    if (!activeItem) {
+      indicator.style.opacity = "0";
+      return;
+    }
+
+    var parentCat = activeItem.closest ? activeItem.closest(".category") : null;
+    if (parentCat && parentCat.classList.contains("collapsed")) {
+      indicator.style.opacity = "0";
+      return;
+    }
+
+    var wrapRect = indicator.parentNode.getBoundingClientRect();
+    var itemRect = activeItem.getBoundingClientRect();
+    indicator.style.top    = (itemRect.top - wrapRect.top) + "px";
+    indicator.style.height = itemRect.height + "px";
+    indicator.style.opacity = "1";
+  }
+
+  function setActiveItem(id) {
+    var items = listEl.querySelectorAll(".archive-item");
+    for (var i = 0; i < items.length; i++) {
+      var el = items[i];
+      if (el.getAttribute("data-id") === id) {
+        el.classList.add("active");
+        var dot = el.querySelector(".new-dot");
+        if (dot && dot.parentNode) { dot.parentNode.removeChild(dot); }
+      } else {
+        el.classList.remove("active");
+      }
+    }
+    requestAnimationFrame(updateArchiveIndicator);
+  }
+
+  function openArchive(id) {
+    if (unlockedIds.indexOf(id) === -1) { return; }
+    var found = findArchive(id);
+    if (!found) { return; }
+    if (currentId === id) { return; }
+
+    var isNew = readIds.indexOf(id) === -1;
+    if (isNew) {
+      readIds.push(id);
+      saveIds(STORAGE_KEY_READ, readIds);
+    }
+
+    currentId = id;
+    docIdEl.textContent = found.id;
+    renderBody(found.body, "none");
+
+    try { localStorage.setItem(STORAGE_KEY_CURRENT, JSON.stringify(currentId)); }
+    catch (e) {}
+
+    setActiveItem(id);
+  }
+
+  function unlockArchive(id) {
+    if (unlockedIds.indexOf(id) === -1) {
+      unlockedIds.push(id);
+      saveIds(STORAGE_KEY, unlockedIds);
+      justUnlockedId = id;
+      renderList();
+
+      var item = findArchive(id);
+      if (item) {
+        if (item.category === "词条") {
+          showAchievement("已解锁新词条", MIKAZUKI_ACH_SVG);
+        } else {
+          showAchievement("已解锁新日志", MIKAZUKI_ACH_SVG);
+        }
+      }
+
+      if (id === "晚上好，月亮") {
+        setTimeout(function () {
+          showAchievement("晚上好，月亮", MIKAZUKI_ACH_SVG);
+        }, 2800);
+      }
+      if (id === "早上好，太阳") {
+        setTimeout(function () {
+          showAchievement("早上好，太阳", FULL_MOON_ACH_SVG);
+        }, 2800);
+      }
+
+      checkProgressAchievements();
+
+      return true;
+    }
+    return false;
+  }
+
+  function handleInput() {
+    var q = normalize(inputEl.value);
+    if (q === "") { return; }
+
+    var target = null;
+    for (var i = 0; i < ARCHIVES.length; i++) {
+      if (normalize(ARCHIVES[i].id) === q) { target = ARCHIVES[i]; break; }
+    }
+    if (!target) { return; }
+
+    if (target.requires && unlockedIds.indexOf(target.requires) === -1) {
+      return;
+    }
+
+    var wasNew = unlockArchive(target.id);
+    if (wasNew) { inputEl.value = ""; }
+  }
+
+  function updateTabIndicator() {
+    if (!tabIndicator || !tabsBarEl) { return; }
+
+    var activeTab = null;
+    tabsEl.forEach(function (tab) {
+      if (tab.classList.contains("active") && tab.offsetParent !== null) {
+        activeTab = tab;
+      }
+    });
+    if (!activeTab) {
+      tabsEl.forEach(function (tab) {
+        if (!activeTab && tab.classList.contains("active")) { activeTab = tab; }
+      });
+    }
+    if (!activeTab) { return; }
+
+    var barRect = tabsBarEl.getBoundingClientRect();
+    var tabRect = activeTab.getBoundingClientRect();
+    var indicatorWidth = tabIndicator.offsetWidth || 32;
+
+    var leftPx = (tabRect.left - barRect.left)
+               + (tabRect.width - indicatorWidth) / 2;
+    if (leftPx < 0) { leftPx = 0; }
+    tabIndicator.style.left = leftPx + "px";
+  }
+
+  function switchPanel(name) {
+    tabsEl.forEach(function (tab) {
+      tab.classList.toggle("active", tab.getAttribute("data-panel") === name);
+    });
+
+    panelIndex.classList.toggle("active", name === "index");
+    panelMusic.classList.toggle("active", name === "music");
+    panelDocEl.classList.toggle("active", name === "doc");
+
+    updateTabIndicator();
+
+    if (name === "index") {
+      requestAnimationFrame(updateArchiveIndicator);
+    }
+  }
+
+  tabsEl.forEach(function (tab) {
+    tab.addEventListener("click", function () {
+      switchPanel(tab.getAttribute("data-panel"));
+    });
+  });
+
+  function isMobile() { return window.innerWidth < 860; }
+
+  function isEditorMode() {
+    return docEditorEl.classList.contains("active");
+  }
+
+  function moveDocCardHome() {
+    if (docCardEl.parentNode !== docCardHome.parent) {
+      if (docCardHome.next && docCardHome.next.parentNode === docCardHome.parent) {
+        docCardHome.parent.insertBefore(docCardEl, docCardHome.next);
+      } else {
+        docCardHome.parent.appendChild(docCardEl);
+      }
+    }
+  }
+
+  function moveDocCardToPanel() {
+    if (docCardEl.parentNode !== panelDocEl) {
+      panelDocEl.appendChild(docCardEl);
+    }
+  }
+
+  function handleResponsiveLayout() {
+    if (!docCardEl || !panelDocEl || !docTabBtnEl) { return; }
+
+    if (isMobile()) {
+      docTabBtnEl.style.display = "";
+
+      if (!isEditorMode()) {
+        moveDocCardToPanel();
+        if (leftColumnEl) { leftColumnEl.style.display = ""; }
+      }
+    } else {
+      docTabBtnEl.style.display = "none";
+
+      moveDocCardHome();
+      if (leftColumnEl) { leftColumnEl.style.display = ""; }
+
+      if (panelDocEl.classList.contains("active")) {
+        switchPanel("index");
+      }
+    }
+    updateTabIndicator();
+    updateArchiveIndicator();
+  }
+
+  function openMobileSidebar() {
+    floatWrapEl.classList.add("active");
+    if (mobileSidebarBackdropEl) {
+      mobileSidebarBackdropEl.classList.add("active");
+    }
+  }
+
+  function closeMobileSidebar() {
+    floatWrapEl.classList.remove("active");
+    if (mobileSidebarBackdropEl) {
+      mobileSidebarBackdropEl.classList.remove("active");
+    }
+  }
+
+  mobileMenuEl.addEventListener("click", openMobileSidebar);
+  mobileSidebarCloseEl.addEventListener("click", closeMobileSidebar);
+
+  if (mobileSidebarBackdropEl) {
+    mobileSidebarBackdropEl.addEventListener("click", closeMobileSidebar);
+  }
+
+  mobileHomeEl.addEventListener("click", function () {
+    closeMobileSidebar();
+    if (isEditorMode()) {
+      exitEditorMode();
+    }
+    switchPanel("index");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  var lastScrollY = 0;
+  var topbarHidden = false;
+  var topbarTicking = false;
+
+  function onScrollUpdate() {
+    topbarTicking = false;
+
+    if (!isMobile()) {
+      if (topbarHidden) {
+        mobileTopbarEl.classList.remove("hidden");
+        topbarHidden = false;
+      }
+      lastScrollY = window.pageYOffset;
+      return;
+    }
+
+    var y = window.pageYOffset || document.documentElement.scrollTop;
+    var delta = y - lastScrollY;
+
+    if (y <= 10) {
+      if (topbarHidden) {
+        mobileTopbarEl.classList.remove("hidden");
+        topbarHidden = false;
+      }
+    } else if (delta > 6 && y > 80) {
+      if (!topbarHidden) {
+        mobileTopbarEl.classList.add("hidden");
+        topbarHidden = true;
+      }
+    } else if (delta < -6) {
+      if (topbarHidden) {
+        mobileTopbarEl.classList.remove("hidden");
+        topbarHidden = false;
+      }
+    }
+
+    lastScrollY = y;
+  }
+
+  window.addEventListener("scroll", function () {
+    if (!topbarTicking) {
+      topbarTicking = true;
+      window.requestAnimationFrame(onScrollUpdate);
+    }
+  }, { passive: true });
+
+  function enterEditorMode() {
+    docViewEl.style.display = "none";
+    docEditorEl.classList.add("active");
+    newTitleEl.value = "";
+    newBodyEl.value = "";
+    newCatEl.value = "词条";
+
+    var titleHeader = docCardEl.querySelector("h2");
+    if (titleHeader) { titleHeader.textContent = "新建文档"; }
+
+    if (docReturnEl) { docReturnEl.style.display = "block"; }
+
+    if (isMobile()) {
+      moveDocCardHome();
+      if (leftColumnEl) { leftColumnEl.style.display = "none"; }
+      document.body.classList.add("mobile-editor-mode");
+    }
+  }
+
+  function exitEditorMode() {
+    docViewEl.style.display = "";
+    docEditorEl.classList.remove("active");
+    suggestionsEl.classList.remove("active");
+
+    var titleHeader = docCardEl.querySelector("h2");
+    if (titleHeader) { titleHeader.textContent = "正文"; }
+
+    if (docReturnEl) { docReturnEl.style.display = "none"; }
+
+    if (isMobile()) {
+      moveDocCardToPanel();
+      if (leftColumnEl) { leftColumnEl.style.display = ""; }
+      document.body.classList.remove("mobile-editor-mode");
+    }
+  }
+
+  newDocEl.addEventListener("click", function () {
+    closeMobileSidebar();
+    enterEditorMode();
+  });
+
+  if (docReturnEl) {
+    docReturnEl.addEventListener("click", function () {
+      if (isEditorMode()) {
+        exitEditorMode();
+      }
+      if (isMobile()) {
+        switchPanel("index");
+      }
+    });
+  }
+
+  newTitleEl.addEventListener("focus", function () {
+    suggestionsEl.classList.add("active");
+  });
+
+  newTitleEl.addEventListener("blur", function () {
+    setTimeout(function () {
+      suggestionsEl.classList.remove("active");
+    }, 180);
+  });
+
+  [newTitleEl, newBodyEl].forEach(function (el) {
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "Tab" || e.key.indexOf("Arrow") === 0) { return; }
+      e.preventDefault();
+    });
+    el.addEventListener("paste", function (e) { e.preventDefault(); });
+    el.addEventListener("cut",   function (e) { e.preventDefault(); });
+    el.addEventListener("drop",  function (e) { e.preventDefault(); });
+  });
+
+  suggestionsEl.addEventListener("click", function (e) {
+    var item = e.target.closest(".suggestion-item");
+    if (!item) { return; }
+    suggestionsEl.classList.remove("active");
+    newTitleEl.blur();
+  });
+
+  aboutBodyEl.textContent = ABOUT_TEXT;
+
+  function showAboutModal() { aboutMaskEl.classList.add("active"); }
+  function hideAboutModal() { aboutMaskEl.classList.remove("active"); }
+
+  aboutEl.addEventListener("click", function () {
+    closeMobileSidebar();
+    showAboutModal();
+  });
+
+  aboutCloseEl.addEventListener("click", hideAboutModal);
+
+  aboutMaskEl.addEventListener("click", function (e) {
+    if (e.target === aboutMaskEl) { hideAboutModal(); }
+  });
+
+  try {
+    if (!localStorage.getItem(STORAGE_KEY_VISITED)) {
+      showAboutModal();
+      localStorage.setItem(STORAGE_KEY_VISITED, "1");
+    }
+  } catch (e) {}
+
+  var audioEl       = null;
+  var activeMusicId = null;
+  var localAudioUrl = null;
+
+  audioEl = document.createElement("audio");
+  audioEl.style.display = "none";
+  audioEl.loop = true;
+  document.body.appendChild(audioEl);
+
+  var fileInputEl = document.createElement("input");
+  fileInputEl.type = "file";
+  fileInputEl.accept = "audio/*";
+  fileInputEl.style.display = "none";
+  document.body.appendChild(fileInputEl);
+
+  fileInputEl.addEventListener("change", function () {
+    var file = fileInputEl.files && fileInputEl.files[0];
+    if (!file) { return; }
+
+    if (localAudioUrl) { URL.revokeObjectURL(localAudioUrl); }
+    localAudioUrl = URL.createObjectURL(file);
+
+    stopAllMusic();
+    audioEl.src = localAudioUrl;
+    audioEl.loop = true;
+    audioEl.play().catch(function () {});
+
+    activeMusicId = "local";
+    renderMusicList();
+  });
+
+  function stopAllMusic() {
+    if (audioEl) {
+      audioEl.pause();
+      audioEl.removeAttribute("src");
+      audioEl.load();
+    }
+  }
+
+  function selectMusic(id) {
+    var item = MUSIC_LIST.filter(function (m) { return m.id === id; })[0];
+    if (!item) { return; }
+
+    activeMusicId = id;
+    renderMusicList();
+
+    if (item.type === "silent") { stopAllMusic(); return; }
+    if (item.type === "local")  { fileInputEl.click(); return; }
+
+    if (item.type === "audio" && item.src) {
+      stopAllMusic();
+      audioEl.src = item.src;
+      audioEl.loop = true;
+      audioEl.play().catch(function () {
+        console.warn("音频自动播放被阻止，请点击页面后重试。");
+      });
+    }
+  }
+
+  function renderMusicList() {
+    musicListEl.innerHTML = "";
+
+    MUSIC_LIST.forEach(function (item) {
+      var li  = document.createElement("li");
+      var btn = document.createElement("button");
+
+      btn.type = "button";
+      btn.className = "music-item" + (item.id === activeMusicId ? " active" : "");
+      btn.setAttribute("data-id", item.id);
+
+      var nameSpan = document.createElement("span");
+      nameSpan.className = "music-name";
+      nameSpan.textContent = item.name;
+      btn.appendChild(nameSpan);
+
+      var statusSpan = document.createElement("span");
+      statusSpan.className = "music-status";
+      if (item.id === activeMusicId) {
+        if (item.type === "silent") { statusSpan.textContent = "已停止"; }
+        else { statusSpan.textContent = "播放中"; }
+      }
+      btn.appendChild(statusSpan);
+
+      btn.addEventListener("click", function () { selectMusic(item.id); });
+
+      li.appendChild(btn);
+      musicListEl.appendChild(li);
+    });
+  }
+
+  renderMusicList();
+
+  /* ============================================================
+     ★ 音效：点击任何按钮时播放 button-click.mp3
+     ============================================================ */
+  var soundEnabled = true;
+  try {
+    var savedSound = localStorage.getItem(STORAGE_KEY_SOUND);
+    if (savedSound === "0") { soundEnabled = false; }
+  } catch (e) { /* 静默 */ }
+
+  var clickAudioEl = document.createElement("audio");
+  clickAudioEl.style.display = "none";
+  clickAudioEl.preload = "auto";
+  clickAudioEl.src = "audio/button-click.mp3";
+  document.body.appendChild(clickAudioEl);
+
+  function playClickSound() {
+    if (!clickAudioEl) { return; }
+    try {
+      clickAudioEl.currentTime = 0;
+      var p = clickAudioEl.play();
+      if (p && p.catch) { p.catch(function () {}); }
+    } catch (e) { /* 静默 */ }
+  }
+
+  /* 全局按钮点击监听（捕获阶段，先于其他监听器） */
+  document.addEventListener("click", function (e) {
+    if (!soundEnabled) { return; }
+    var t = e.target;
+    if (!t || !t.closest) { return; }
+    var btn = t.closest("button");
+    if (!btn) { return; }
+    playClickSound();
+  }, true);
+
+  /* 音效开关 */
+  if (soundToggleEl) {
+    soundToggleEl.setAttribute("aria-checked", soundEnabled ? "true" : "false");
+
+    soundToggleEl.addEventListener("click", function () {
+      soundEnabled = !soundEnabled;
+      soundToggleEl.setAttribute("aria-checked", soundEnabled ? "true" : "false");
+      try {
+        localStorage.setItem(STORAGE_KEY_SOUND, soundEnabled ? "1" : "0");
+      } catch (e) { /* 静默 */ }
+    });
+  }
+
+  function resetProgress() {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY_READ);
+      localStorage.removeItem(STORAGE_KEY_CURRENT);
+      localStorage.removeItem(STORAGE_KEY_ACH);
+    } catch (e) {}
+
+    unlockedIds = ARCHIVES.length > 0 ? [ARCHIVES[0].id] : [];
+    readIds = [];
+    currentId = "";
+    justUnlockedId = "";
+    collapsedCategories = {};
+
+    saveIds(STORAGE_KEY, unlockedIds);
+    saveIds(STORAGE_KEY_READ, readIds);
+
+    exitEditorMode();
+    renderList();
+
+    if (ARCHIVES.length > 0) {
+      openArchive(ARCHIVES[0].id);
+    } else {
+      docIdEl.textContent = "—— —— ——";
+      docBodyEl.textContent = "尚未选择档案。请在上方输入档案名以解锁。";
+      docBodyEl.classList.add("is-empty");
+    }
+
+    inputEl.value = "";
+    showAboutModal();
+    switchPanel("index");
+  }
+
+  logoutEl.addEventListener("click", function () {
+    var ok = window.confirm(
+      "确定要登出并清除所有本地档案记录吗？\n" +
+      "此操作不可撤销，所有已解锁的档案将重新锁定。"
+    );
+    if (ok) {
+      closeMobileSidebar();
+      resetProgress();
+    }
+  });
+
+  var composing = false;
+
+  inputEl.addEventListener("compositionstart", function () { composing = true; });
+  inputEl.addEventListener("compositionend", function () {
+    composing = false;
+    handleInput();
+  });
+  inputEl.addEventListener("input", function () {
+    if (!composing) { handleInput(); }
+  });
+  inputEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { handleInput(); }
+  });
+
+  clearEl.addEventListener("click", function () {
+    inputEl.value = "";
+    inputEl.focus();
+  });
+
+  window.addEventListener("resize", function () {
+    if (window.__combinedResizeTimer) {
+      clearTimeout(window.__combinedResizeTimer);
+    }
+    window.__combinedResizeTimer = setTimeout(function () {
+      scheduleMoonRender();
+      handleResponsiveLayout();
+      updateTabIndicator();
+      updateArchiveIndicator();
+    }, 150);
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      scheduleMoonRender();
+      handleResponsiveLayout();
+      updateTabIndicator();
+      updateArchiveIndicator();
+    });
+  }
+
+  renderList();
+
+  var restoredId = null;
+  try {
+    restoredId = JSON.parse(localStorage.getItem(STORAGE_KEY_CURRENT) || "null");
+  } catch (e) { restoredId = null; }
+
+  if (restoredId && unlockedIds.indexOf(restoredId) !== -1) {
+    openArchive(restoredId);
+  } else {
+    var firstUnlocked = null;
+    for (var fi = 0; fi < ARCHIVES.length; fi++) {
+      if (unlockedIds.indexOf(ARCHIVES[fi].id) !== -1) {
+        firstUnlocked = ARCHIVES[fi];
+        break;
+      }
+    }
+    if (firstUnlocked) { openArchive(firstUnlocked.id); }
+  }
+
+  handleResponsiveLayout();
+  updateTabIndicator();
+  updateArchiveIndicator();
+
+})();
+</script>
+
+</body>
+</html>
